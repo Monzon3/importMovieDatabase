@@ -1,6 +1,6 @@
 '''
-La idea es crear la base de datos utilizando este archivo y dejarlo como futura referencia
-para ver qué tablas existen, tipos de datos contenidos en ellas, etc.
+The idea is to create the database using this file and leave it as a future reference
+to look up which tables exists, type of data within them, etc.
 '''
 from configparser import ConfigParser
 import sqlite3 as sql
@@ -9,12 +9,12 @@ config = ConfigParser()
 config.read('C:\\Users\\F36SMD0\\Desktop\\Documentos\\Mios\\database\\configuration.ini')
 db_path = config.get('Paths', 'database')
 
-# Conexión con la base de datos
+# Connect with the database
 conn = sql.connect(db_path)
 db = conn.cursor()
 
-# Generar tablas
-# Tabla principal
+# Generate tables
+# Main table
 try:
     sql_query = '''CREATE TABLE Peliculas (
                 id SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
@@ -30,10 +30,10 @@ try:
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Películas\" creada correctamente')
+    print('\"Películas\" table has been created correctly')
 
 except sql.Error as error:
-    print('Error al crear la tabla \"Películas\"', error)
+    print('Error while creating the table \"Películas\"', error)
 
  # Disco
 try:
@@ -43,10 +43,10 @@ try:
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Disco\" creada correctamente')
+    print('\"Disco\" table has been created correctly')
    
 except sql.Error as error:
-    print('Error al crear la tabla \"Disco\"', error)
+    print('Error while creating the table \"Disco\"', error)
 
 
 # Calidad
@@ -57,10 +57,10 @@ try:
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Calidad\" creada correctamente')
+    print('\"Calidad\" table has been created correctly')
    
 except sql.Error as error:
-    print('Error al crear la tabla \"Calidad\"', error)
+    print('Error while creating the table \"Calidad\"', error)
 
 # Idioma
 try:
@@ -71,36 +71,36 @@ try:
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Idioma\" creada correctamente')
+    print('\"Idioma\" table has been created correctly')
    
 except sql.Error as error:
-    print('Error al crear la tabla \"Idioma\"', error)
+    print('Error while creating the table \"Idioma\"', error)
 
-# Audio_en_archivo
+# Audio_in_file
 try:
-    sql_query = '''CREATE TABLE Audio_en_archivo (
+    sql_query = '''CREATE TABLE Audio_in_file (
                 pelicula_id SMALLINT UNSIGNED NOT NULL,
                 idioma_id SMALLINT UNSIGNED NOT NULL);'''
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Audio_en_archivo\" creada correctamente')
+    print('\"Audio_in_file\" table has been created correctly')
    
 except sql.Error as error:
-    print('Error al crear la tabla \"Audio_en_archivo\"', error)
+    print('Error while creating the table \"Audio_in_file\"', error)
 
 # Subs_en_archivo
 try:
-    sql_query = '''CREATE TABLE Subs_en_archivo (
+    sql_query = '''CREATE TABLE Subs_in_file (
                 pelicula_id SMALLINT UNSIGNED NOT NULL,
                 idioma_id SMALLINT UNSIGNED NOT NULL);'''
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Subs_en_archivo\" creada correctamente')
+    print('\"Subs_in_file\" table has been created correctly')
    
 except sql.Error as error:
-    print('Error al crear la tabla \"Subs_en_archivo\"', error)
+    print('Error while creating the table \"Subs_in_file\"', error)
 
 # Pais
 try:
@@ -110,10 +110,10 @@ try:
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Pais\" creada correctamente')
+    print('\"Pais\" table has been created correctly')
    
 except sql.Error as error:
-    print('Error al crear la tabla \"Pais\"', error)
+    print('Error while creating the table \"Pais\"', error)
 
 # Género - plantilla
 try:
@@ -123,10 +123,10 @@ try:
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Genero\" creada correctamente')
+    print('\"Genero\" table has been created correctly')
    
 except sql.Error as error:
-    print('Error al crear la tabla \"Genero\"', error)
+    print('Error while creating the table \"Genero\"', error)
 
 # Género_en_archivo
 try:
@@ -136,10 +136,10 @@ try:
 
     db.execute(sql_query)
     conn.commit()
-    print('Tabla \"Genero_en_archivo\" creada correctamente')
+    print('\"Genero_in_file\" table has been created correctly')
    
 except sql.Error as error:
-    print('Error al crear la tabla \"Genero_en_archivocls\"', error)
+    print('Error while creating the table \"Genero_in_file\"', error)
 
 db.close()
 conn.close()
