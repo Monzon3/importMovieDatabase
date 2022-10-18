@@ -6,8 +6,10 @@ from configparser import ConfigParser
 import sqlite3 as sql
 
 config = ConfigParser()
-config.read('C:\\Users\\F36SMD0\\Desktop\\Documentos\\Mios\\database\\configuration.ini')
-db_path = config.get('Paths', 'database')
+config.read('C:\\MisCosas\\Documentos\\MovieDatabase\\configuration.ini')
+db_path = config.get('Paths', 'create_database')
+
+print(db_path)
 
 # Connect with the database
 conn = sql.connect(db_path)
@@ -17,16 +19,17 @@ db = conn.cursor()
 # Main table
 try:
     sql_query = '''CREATE TABLE Peliculas (
-                id SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-                Titulo VARCHAR(255) NOT NULL,
-                TituloOriginal VARCHAR(255) NOT NULL,
-                Disco TINYINT UNSIGNED NOT NULL,
-                Calidad TINYINT UNSIGNED NOT NULL, 
-                Year SMALLINT UNSIGNED NOT NULL,
-                Pais VARCHAR(255) NOT NULL,
-                Duracion SMALLINT UNSIGNED NOT NULL,
-                Director VARCHAR(255) NOT NULL,
-                Guion VARCHAR(512) NOT NULL);'''
+                id INTEGER NOT NULL,
+                Titulo TEXT NOT NULL,
+                TituloOriginal TEXT NOT NULL,
+                Disco INTEGER NOT NULL,
+                Calidad INTEGER NOT NULL, 
+                Year INTEGER NOT NULL,
+                Pais TEXT NOT NULL,
+                Duracion INTEGER NOT NULL,
+                Director TEXT NOT NULL,
+                Guion TEXT NOT NULL,
+                PRIMARY KEY (id));'''
 
     db.execute(sql_query)
     conn.commit()
@@ -37,9 +40,10 @@ except sql.Error as error:
 
  # Disco
 try:
-    sql_query = ''' CREATE TABLE Disco (
-                id SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-                Disco VARCHAR(255) NOT NULL);'''
+    sql_query = '''CREATE TABLE Disco (
+                id INTEGER NOT NULL,
+                Disco TEXT NOT NULL,
+                PRIMARY KEY (id));'''
 
     db.execute(sql_query)
     conn.commit()
@@ -52,8 +56,9 @@ except sql.Error as error:
 # Calidad
 try:
     sql_query = '''CREATE TABLE Calidad (
-                id SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-                Calidad VARCHAR(255) NOT NULL);'''
+                id INTEGER NOT NULL,
+                Calidad TEXT NOT NULL,
+                PRIMARY KEY (id));'''
 
     db.execute(sql_query)
     conn.commit()
@@ -65,9 +70,10 @@ except sql.Error as error:
 # Idioma
 try:
     sql_query = '''CREATE TABLE Idioma (
-                id SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-                IdiomaAbr CHAR(3) NOT NULL,
-                IdiomaCompleto VARCHAR(255) NOT NULL);'''
+                id INTEGER NOT NULL,
+                IdiomaAbreviado TEXT NOT NULL,
+                IdiomaCompleto TEXT NOT NULL,
+                PRIMARY KEY (id));'''
 
     db.execute(sql_query)
     conn.commit()
@@ -79,8 +85,8 @@ except sql.Error as error:
 # Audio_in_file
 try:
     sql_query = '''CREATE TABLE Audio_in_file (
-                pelicula_id SMALLINT UNSIGNED NOT NULL,
-                idioma_id SMALLINT UNSIGNED NOT NULL);'''
+                pelicula_id INTEGER NOT NULL,
+                idioma_id INTEGER NOT NULL);'''
 
     db.execute(sql_query)
     conn.commit()
@@ -89,11 +95,11 @@ try:
 except sql.Error as error:
     print('Error while creating the table \"Audio_in_file\"', error)
 
-# Subs_en_archivo
+# Subs_in_file
 try:
     sql_query = '''CREATE TABLE Subs_in_file (
-                pelicula_id SMALLINT UNSIGNED NOT NULL,
-                idioma_id SMALLINT UNSIGNED NOT NULL);'''
+                pelicula_id INTEGER NOT NULL,
+                idioma_id INTEGER NOT NULL);'''
 
     db.execute(sql_query)
     conn.commit()
@@ -105,8 +111,9 @@ except sql.Error as error:
 # Pais
 try:
     sql_query = '''CREATE TABLE Pais (
-                id SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-                Pais VARCHAR(255) NOT NULL);'''
+                id INTEGER NOT NULL,
+                Nombre TEXT NOT NULL,
+                PRIMARY KEY (id));'''
 
     db.execute(sql_query)
     conn.commit()
@@ -118,8 +125,9 @@ except sql.Error as error:
 # Género - plantilla
 try:
     sql_query = '''CREATE TABLE Genero (
-                id SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-                Genero VARCHAR(255));'''
+                id INTEGER NOT NULL,
+                Value TEXT NOT NULL,
+                PRIMARY KEY (id));'''
 
     db.execute(sql_query)
     conn.commit()
@@ -128,11 +136,11 @@ try:
 except sql.Error as error:
     print('Error while creating the table \"Genero\"', error)
 
-# Género_en_archivo
+# Género_in_file
 try:
     sql_query = '''CREATE TABLE Genero_en_archivo (
-                pelicula_id SMALLINT UNSIGNED NOT NULL,
-                genero_id SMALLINT UNSIGNED NOT NULL);'''
+                pelicula_id INTEGER NOT NULL,
+                genero_id INTEGER NOT NULL);'''
 
     db.execute(sql_query)
     conn.commit()
