@@ -1,2 +1,4 @@
 configparser
+json
+pandas
 sqlite3

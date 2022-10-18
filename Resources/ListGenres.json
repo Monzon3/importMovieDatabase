@@ -1,0 +1,174 @@
+{
+    "1": {
+        "Category": "Géneros",
+        "Name": "Bélico" 
+    },
+    "2": {
+        "Category": "Géneros",
+        "Name": "Ciencia ficción" 
+    },
+    "3": {
+        "Category": "Géneros",
+        "Name": "Cine negro" 
+    },
+    "4": {
+        "Category": "Géneros",
+        "Name": "Drama carcelario" 
+    },
+    "5": {
+        "Category": "Géneros",
+        "Name": "Documental" 
+    },
+    "6": {
+        "Category": "Géneros",
+        "Name": "Musical" 
+    },
+    "7": {
+        "Category": "Géneros",
+        "Name": "Quinqui" 
+    },
+    "8": {
+        "Category": "Géneros",
+        "Name": "Road movie" 
+    },
+    "9": {
+        "Category": "Géneros",
+        "Name": "Spaghetti Western" 
+    },
+    "10": {
+        "Category": "Géneros",
+        "Name": "Terror" 
+    },
+    "11": {
+        "Category": "Géneros",
+        "Name": "Western" 
+    },
+    "12": {
+        "Category": "Movimientos",
+        "Name": "Expresionismo alemán" 
+    },
+    "13": {
+        "Category": "Movimientos",
+        "Name": "Free Cinema" 
+    },
+    "14": {
+        "Category": "Movimientos",
+        "Name": "Neorrealismo" 
+    },
+    "15": {
+        "Category": "Movimientos",
+        "Name": "Nouvelle vague" 
+    },
+    "16": {
+        "Category": "Movimientos",
+        "Name": "Nueva ola Checoslovaca" 
+    },
+    "17": {
+        "Category": "Movimientos",
+        "Name": "Surrealismo" 
+    },
+    "18": {
+        "Category": "Premios",
+        "Name": "Cannes - Palma de Oro" 
+    },
+    "19": {
+        "Category": "Premios",
+        "Name": "Goya - Mejor película" 
+    },
+    "20": {
+        "Category": "Premios",
+        "Name": "Oscars - Mejor director" 
+    },
+    "21": {
+        "Category": "Premios",
+        "Name": "Oscars - Mejor extranjera" 
+    },
+    "22": {
+        "Category": "Premios",
+        "Name": "Oscars - Mejor fotografía" 
+    },
+    "23": {
+        "Category": "Premios",
+        "Name": "Oscars - Mejor película" 
+    },
+    "24": {
+        "Category": "Producción",
+        "Name": "Asiático" 
+    },
+    "25": {
+        "Category": "Producción",
+        "Name": "Africano" 
+    },
+    "26": {
+        "Category": "Producción",
+        "Name": "Escandinavo" 
+    },
+    "27": {
+        "Category": "Producción",
+        "Name": "Europeo" 
+    },
+    "28": {
+        "Category": "Producción",
+        "Name": "Latinoamericano" 
+    },
+    "29": {
+        "Category": "Producción",
+        "Name": "Oriente" 
+    },
+    "30": {
+        "Category": "Producción",
+        "Name": "Pixar" 
+    },
+    "31": {
+        "Category": "Técnicas",
+        "Name": "Animación" 
+    },
+    "32": {
+        "Category": "Técnicas",
+        "Name": "Blanco y negro" 
+    },
+    "33": {
+        "Category": "Técnicas",
+        "Name": "Stop motion" 
+    },
+    "34": {
+        "Category": "Temática",
+        "Name": "Cine dentro del cine" 
+    },
+    "35": {
+        "Category": "Temática",
+        "Name": "Filosóficas" 
+    },
+    "36": {
+        "Category": "Temática",
+        "Name": "Histórico" 
+    },
+    "37": {
+        "Category": "Temática",
+        "Name": "IRA" 
+    },
+    "38": {
+        "Category": "Temática",
+        "Name": "Música" 
+    },
+    "39": {
+        "Category": "Temática",
+        "Name": "Película de culto" 
+    },
+    "40": {
+        "Category": "Temática",
+        "Name": "Primera Guerra Mundial" 
+    },
+    "41": {
+        "Category": "Temática",
+        "Name": "Samuráis" 
+    },
+    "42": {
+        "Category": "Temática",
+        "Name": "Segunda Guerra Mundial" 
+    },
+    "43": {
+        "Category": "Temática",
+        "Name": "Yakuza" 
+    }
+}
