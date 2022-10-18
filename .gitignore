@@ -132,5 +132,6 @@ dmypy.json
 test.db
 /Dash
 /antiguos
-/00_CreateDatabase/Peliculas.db
-/01_ImportDatabase/Peliculas.xlsx
+00_CreateDatabase/Peliculas.db
+01_ImportDatabase/Peliculas.xlsx
+01_ImportDatabase/Peliculas.db
