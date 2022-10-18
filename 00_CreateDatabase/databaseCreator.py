@@ -18,7 +18,7 @@ db = conn.cursor()
 # Generate tables
 # Main table
 try:
-    sql_query = '''CREATE TABLE Peliculas (
+    sql_query = '''CREATE TABLE Main (
                 id INTEGER NOT NULL,
                 Titulo TEXT NOT NULL,
                 TituloOriginal TEXT NOT NULL,
@@ -51,7 +51,6 @@ try:
    
 except sql.Error as error:
     print('Error while creating the table \"Disco\"', error)
-
 
 # Calidad
 try:
@@ -112,7 +111,7 @@ except sql.Error as error:
 try:
     sql_query = '''CREATE TABLE Pais (
                 id INTEGER NOT NULL,
-                Nombre TEXT NOT NULL,
+                Nombre INTEGER NOT NULL,
                 PRIMARY KEY (id));'''
 
     db.execute(sql_query)
@@ -126,7 +125,8 @@ except sql.Error as error:
 try:
     sql_query = '''CREATE TABLE Genero (
                 id INTEGER NOT NULL,
-                Value TEXT NOT NULL,
+                Categoria TEXT NOT NULL,
+                Nombre TEXT NOT NULL,
                 PRIMARY KEY (id));'''
 
     db.execute(sql_query)
