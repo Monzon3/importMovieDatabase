@@ -130,8 +130,9 @@ dmypy.json
 
 # Míos
 test.db
+Ideas.txt
 /Dash
 /antiguos
 00_CreateDatabase/Peliculas.db
-01_ImportDatabase/Peliculas.xlsx
 01_ImportDatabase/Peliculas.db
+Resources/Peliculas.xlsx
