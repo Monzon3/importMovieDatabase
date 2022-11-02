@@ -1,6 +1,6 @@
 '''
 The idea is to create the database using this file and leave it as a future reference
-to look up which tables exists, type of data within them, etc.
+to look up which tables exists, type of datas within them, etc.
 '''
 import dbConnector
 import sqlite3 as sql

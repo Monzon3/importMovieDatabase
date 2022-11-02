@@ -1,9 +1,10 @@
 '''
 After the new database and its tables have been created, export values from the original Access database
-into a file named 'Peliculas.xlsx'. Then copy the newly created 'Peliculas.db' file into
-this path (\\01_ImportDatabase) and execute this script to obtain all unique values
-from the original fields 'Disco', 'Calidad', 'Idioma' and 'Pais'; and then import those values
-into the new database.
+into a file named 'Peliculas.xlsx' and store it in \Resources. 
+Then copy the newly created 'Peliculas.db' file into this path (\01_ImportDatabase) 
+and execute this script to obtain all unique values from the original fields 'Disco', 'Calidad', 
+'Idioma' and 'Pais'. 
+Then import those values into the new database.
 '''
 
 from configparser import ConfigParser
@@ -42,6 +43,7 @@ def update_database(series, table, col):
     '''
         - series: Series of values to insert into the new dataframe's tables
         - table: Name of the table in which to insert these above mentioned values 
+        - col: Name of the column, within the table, in which to insert values
     '''
 
     # Full languages names need to be added so the NOT NULL constraint is met
