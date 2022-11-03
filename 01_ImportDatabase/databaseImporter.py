@@ -91,23 +91,18 @@ if __name__ == '__main__':
     config = ConfigParser()
     config.read('C:\\MisCosas\\Documentos\\MovieDatabase\\configuration.ini')
 
-   # Connect with the database
-    db_path = config.get('Paths', 'import_database')
-    conn = sql.connect(db_path)
-    db = conn.cursor()
-
-    # Enable foreign keys
-    dbConnector.enable_fk(db)
+    # Connect with 'import_database' which is found in the [Paths] section of .ini file
+    [conn, db] = dbConnector.connect_to_db('import_database')
 
     # Import data from Excel file (obtained from the original Access database)
     excel_path = config.get('Aux_files', 'excel_database')
-    df = pd.read_excel(excel_path)
+    movie_database = pd.read_excel(excel_path)
 
     # Get unique values for the following columns to populate the new tables in the database
-    disc = get_individual_values('Disco', df)
-    quality = get_individual_values('Calidad', df)
-    lang = get_individual_values('IdiomaAudio', df)
-    country = get_individual_values('Pais', df)
+    disc = get_individual_values('Disco', movie_database)
+    quality = get_individual_values('Calidad', movie_database)
+    lang = get_individual_values('IdiomaAudio', movie_database)
+    country = get_individual_values('Pais', movie_database)
 
     # Import the values into the new database
     update_database(disc, 'Disco', 'Disco')

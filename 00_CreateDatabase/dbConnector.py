@@ -32,5 +32,9 @@ def connect_to_db(db_name):
     # Connect with the database
     connector = sql.connect(db_path)
     cursor = connector.cursor()
+    print(f'Connected to database \'{db_path}\'')
+
+    # Always enable foreign keys
+    enable_fk(cursor)                                                 
 
     return connector, cursor
