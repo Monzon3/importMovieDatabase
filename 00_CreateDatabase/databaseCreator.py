@@ -1,7 +1,5 @@
-'''
-The idea is to create the database using this file and leave it as a future reference
-to look up which tables exists, type of datas within them, etc.
-'''
+''' The idea is to create the database using this file and leave it as a future reference
+to look up which tables are in it, type of data within them, etc. '''
 import dbConnector
 import sqlite3 as sql
 
@@ -136,7 +134,7 @@ if __name__ == '__main__':
 
     # Género_in_file
     try:
-        sql_query = '''CREATE TABLE Genero_en_archivo (
+        sql_query = '''CREATE TABLE Genero_in_file (
                     pelicula_id INTEGER NOT NULL,
                     genero_id INTEGER NOT NULL,
                     FOREIGN KEY (pelicula_id) REFERENCES Main(id)

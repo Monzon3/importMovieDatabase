@@ -3,11 +3,9 @@ import sqlite3 as sql
 
 
 def connect_to_db(db_name):
-    '''
-    This function returns the connector and cursor objects to work with the database 
+    ''' This function returns the connector and cursor objects to work with the database 
 
-    - db: The name of the database path within the Configuration.ini file.
-    '''
+    - db_name: The name of the database path within the Configuration.ini file.'''
 
     # Read path from .ini Config file
     config = ConfigParser()
@@ -26,10 +24,8 @@ def connect_to_db(db_name):
 
 
 def enable_fk(db_cursor):
-    '''
-    This function enables the usage of foreign keys in the database 
-    and then checks whether they have been successfully enabled.
-    '''
+    ''' This function enables the usage of foreign keys in the database 
+    and then checks whether they have been successfully enabled.'''
     sql_command = 'PRAGMA foreign_keys = ON'
     db_cursor.execute(sql_command)
 
