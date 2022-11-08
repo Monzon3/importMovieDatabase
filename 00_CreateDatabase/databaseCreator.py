@@ -1,6 +1,7 @@
 ''' The idea is to create the database using this file and leave it as a future reference
-to look up which tables are in it, type of data within them, etc. '''
-import dbConnector
+to look up which tables are in it, type of data within them, etc. 
+The new empty database is created as 00_EmptyDatabase.db.'''
+import common.dbConnector as dbConnector
 import sqlite3 as sql
 
 if __name__ == '__main__':

@@ -7,11 +7,11 @@ the original database for the new corresponding IDs.
 After this is done, the tables Audio_in_file, Genre_in_file and Subs_in_file
 are populated using the information from the original database and the reference tables.
 
-Before running this script, copy the database from /01_ImportDatabase/Peliculas.db into
-/test.db.'''
+Before running this script, copy the newly created '01_ImportDatabase.db' to keep a copy
+and rename it /Test.db.'''
 
 from configparser import ConfigParser
-import dbConnector
+import common.dbConnector as dbConnector
 import pandas as pd
 import sqlite3 as sql
 
@@ -150,7 +150,7 @@ def obtainID(field, value):
 if __name__ == '__main__':
     # Load the configuration.ini file
     config = ConfigParser()
-    config.read('C:\\MisCosas\\Documentos\\MovieDatabase\\configuration.ini')
+    config.read('./config/configuration.ini')
 
     # Import data from Excel file (obtained from the original Access database)
     excel_path = config.get('Aux_files', 'excel_database')

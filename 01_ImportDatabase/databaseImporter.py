@@ -1,14 +1,14 @@
 ''' After the new database and its tables have been created, export values from the original Access database
-into a file named 'Peliculas.xlsx' and store it in \Resources. 
+into a file named 'Peliculas.xlsx' and store it in /resources. 
 
-Then, copy the newly created 'Peliculas.db' file into /01_ImportDatabase 
-and execute this script to obtain all unique values from the original fields 'Disco', 'Calidad', 
-'Idioma' and 'Pais' and import them values into the new database.
+Then, copy the newly created '00_EmptyDatabase.db' file in the same path to keep a copy
+and rename it '/01_ImportDatabase.db'. Then execute this script to obtain all unique values 
+from the original fields 'Disco', 'Calidad', 'Idioma' and 'Pais' and import their values into the new database.
 
 Finally, the genres table is also populated with the values from the .json file 'ListGenres'.'''
 
 from configparser import ConfigParser
-import dbConnector
+import common.dbConnector as dbConnector
 import json
 import pandas as pd
 import sqlite3 as sql
@@ -46,8 +46,7 @@ def update_database(series, table, col):
     
     - series: Series of values to insert into the new dataframe's tables
     - table: Name of the table in which to insert these above mentioned values 
-    - col: Name of the column, within the table, in which to insert values
-    '''
+    - col: Name of the column, within the table, in which to insert values.'''
 
     # Full languages' names need to be added so the NOT NULL constraint is met
     if table == 'Idioma':
@@ -73,8 +72,7 @@ def update_database(series, table, col):
 
 def update_genres():
     ''' This function will populate the table 'Generos' included in the database using the 
-    .json file 'ListGenres', where all options should be included.
-    '''
+    .json file 'ListGenres', where all options should be included.'''
 
     with open(config.get('Aux_files', 'genres_list'), encoding = 'utf-8') as f:
         genres = json.load(f)
@@ -93,7 +91,7 @@ def update_genres():
 if __name__ == '__main__':
     # Load the configuration.ini file
     config = ConfigParser()
-    config.read('C:\\MisCosas\\Documentos\\MovieDatabase\\configuration.ini')
+    config.read('./config/configuration.ini')
 
     # Connect with 'import_database' which is found in the [Paths] section of .ini file
     [conn, db] = dbConnector.connect_to_db('import_database')
@@ -115,7 +113,6 @@ if __name__ == '__main__':
     update_database(country, 'Pais', 'Pais')
     update_genres()
 
-    print('\n')
     print('If no errors have been shown, all values have been correctly imported')
     print('  into the tables \'Calidad\', \'Disco\', \'Idioma\' and \'Pais\' in the new database')
 
