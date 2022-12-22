@@ -1,7 +1,7 @@
 ''' After the new database and its tables have been created, export values from the original Access database
 into a file named 'Peliculas.xlsx' and store it in /resources. 
 
-Then, copy the newly created '00_EmptyDatabase.db' file in the same path to keep a copy
+Then, copy the newly created '00_EmptyDatabase.db' file in its own path (the root) to keep a copy
 and rename it '/01_ImportDatabase.db'. Then execute this script to obtain all unique values 
 from the original fields 'Disco', 'Calidad', 'Idioma' and 'Pais' and import their values into the new database.
 
@@ -15,7 +15,7 @@ import sqlite3 as sql
 
 def get_unique_values(col, dataFrame):
     ''' This function will obtain the unique values from a specific column in the original database
-    to populate the new 'Calidad', 'Disco', 'Idioma' and 'Pais' tables in the new database
+    to populate the new 'Country', 'Language', 'Quality and 'Storage' tables in the new database
 
     - col: Name of the column in the original Access database to work with
     - dataFrame: Full original Access database, in a Pandas DataFrame structure'''
@@ -41,24 +41,22 @@ def get_unique_values(col, dataFrame):
 
 
 def update_database(series, table, col):
-    ''' This function will populate the tables 'Calidad', 'Disco', 'Idioma' and 'Pais' in the new database
-    with the unique values obtained from the original database
+    ''' This function will populate the tables 'Country', 'Language', 'Quality and 'Storage' 
+    in the new database with the unique values obtained from the original database
     
     - series: Series of values to insert into the new dataframe's tables
     - table: Name of the table in which to insert these above mentioned values 
     - col: Name of the column, within the table, in which to insert values.'''
 
     # Full languages' names need to be added so the NOT NULL constraint is met
-    if table == 'Idioma':
+    if table == 'Languages':
         with open(config.get('Aux_files', 'languages_list'), encoding = 'utf-8') as f:
             lang_list = json.load(f)
 
     for val in series:
         try:
-            if table == 'Idioma':
-                sql_query = 'INSERT INTO ' + table + ' (' + col + ''', IdiomaCompleto) 
-                            VALUES (\'''' + val + '\', \'' + lang_list[val] + '\')'
-                sql_query = f'''INSERT INTO {table} ({col}, IdiomaCompleto)
+            if table == 'Languages':
+                sql_query = f'''INSERT INTO {table} ({col}, LangComplete)
                             VALUES (\'{val}\', \'{lang_list[val]}\')'''
             else:
                 sql_query = f'INSERT INTO {table} ({col}) VALUES (\'{val}\')'
@@ -71,16 +69,34 @@ def update_database(series, table, col):
 
 
 def update_genres():
-    ''' This function will populate the table 'Generos' included in the database using the 
-    .json file 'ListGenres', where all options should be included.'''
+    ''' This function will populate the tables 'Genres' and 'Genres_Categories' 
+    from the database using the .json file 'ListGenres', where all options should be included.'''
 
     with open(config.get('Aux_files', 'genres_list'), encoding = 'utf-8') as f:
         genres = json.load(f)
 
+    list = []
     for i in genres.keys():
+        if genres[i]['Category'] not in list: 
+            list.append(genres[i]['Category'])
+            sql_query = f'''INSERT INTO Genre_Categories (Category) VALUES 
+                            (\'{genres[i]['Category']}\')'''
+            try:
+                db.execute(sql_query)
+                conn.commit()
+
+            except sql.Error as error:
+                print(f'Error while updating the table \'Genre_Categories\' using: \n {sql_query}: ', error)
+
         try:
-            sql_query = f'''INSERT INTO Genero (Categoria, Nombre) VALUES 
-                        (\'{genres[i]['Category']}\', \'{genres[i]['Name']}\')'''            
+            sql_query = f'''SELECT id FROM Genre_Categories 
+                            WHERE Category = \'{genres[i]['Category']}\'''' 
+
+            res = db.execute(sql_query).fetchone()
+
+            sql_query = f'''INSERT INTO Genres (CategoryID, Name) VALUES 
+                            ({res[0]}, \'{genres[i]['Name']}\')''' 
+
             db.execute(sql_query)
             conn.commit() 
 
@@ -107,14 +123,15 @@ if __name__ == '__main__':
     country = get_unique_values('Pais', movie_database)
 
     # Import the unique values into the new database
-    update_database(disc, 'Disco', 'Disco')
-    update_database(quality, 'Calidad', 'Calidad')
-    update_database(lang, 'Idioma', 'IdiomaAbreviado')
-    update_database(country, 'Pais', 'Pais')
+    update_database(disc, 'Storage', 'Device')
+    update_database(quality, 'Quality', 'Quality')
+    update_database(lang, 'Languages', 'LangShort')
+    update_database(country, 'Countries', 'Country')
     update_genres()
 
-    print('If no errors have been shown, all values have been correctly imported')
-    print('  into the tables \'Calidad\', \'Disco\', \'Idioma\' and \'Pais\' in the new database')
+    str1 = 'If no errors have been shown, all values have been correctly imported'
+    str2 = "into the tables 'Quality', 'Storage', 'Languages', 'Countries' and 'Genres'"
+    print(' '.join([str1, str2]))
 
     db.close()
     conn.close()

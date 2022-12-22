@@ -129,11 +129,12 @@ dmypy.json
 .pyre/
 
 # Míos
-test.db
-Ideas.txt
-/Dash
 00_EmptyDatabase.db
 01_ImportDatabase.db
+Ideas.txt
+test.db
+test.py
+/Dash
 resources/Peliculas.xlsx
 resources/Peliculas_New.xlsx
 resources/DataChecker.xlsm

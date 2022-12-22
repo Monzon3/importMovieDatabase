@@ -17,25 +17,27 @@ import sqlite3 as sql
 
 
 def import_df_to_db(dataFrame, connector, cursor):
-    ''' After finding the new ID values for the fields 'Calidad', 'Disco' and 'Pais'
+    ''' After finding the new ID values for the fields 'Quality', 'Storage' and 'Countries'
     the whole database from the Excel file is imported into the new SQL database.'''
 
     for i in range(dataFrame.shape[0]):
-        # ' are replace by '' so SQL is able to process them properly
-        tit = dataFrame.loc[i, 'Titulo'].replace("\'","\'\'")
-        origTit = dataFrame.loc[i, 'TituloOriginal'].replace("\'","\'\'")
+        # ' are replaced by '' so SQL is able to process them properly
+        tit = dataFrame.loc[i, 'Titulo'].replace("'","''")
+        origTit = dataFrame.loc[i, 'TituloOriginal'].replace("'","''")
         disc = dataFrame.loc[i, 'Disco']
         qt = dataFrame.loc[i, 'Calidad']
         year = dataFrame.loc[i, 'Año']
         country = dataFrame.loc[i, 'Pais']
         dur = dataFrame.loc[i, 'Duracion']
-        dir = dataFrame.loc[i, 'Director'].replace("\'","\'\'")
-        script = dataFrame.loc[i, 'Guion'].replace("\'","\'\'")
-        sql_query = f"""INSERT INTO Main (Titulo, TituloOriginal, DiscoID, CalidadID, Year,
-                    PaisID, Duracion, Director, Guion) 
+        dir = dataFrame.loc[i, 'Director'].replace("'","''")
+        script = dataFrame.loc[i, 'Guion'].replace("'","''")
+        punt = dataFrame.loc[i, 'Puntuacion']
+        img = dataFrame.loc[i, 'Imagen']
+        sql_query = f"""INSERT INTO Main (Title, OriginalTitle, StorageID, QualityID, Year,
+                    CountryID, Length, Director, Screenwriter, Score, Image) 
                     VALUES 
-                    (\'{tit}\', \'{origTit}\', {disc}, {qt}, {year}, 
-                    {country}, {dur}, \'{dir}\', \'{script}\')"""
+                    ('{tit}', '{origTit}', {disc}, {qt}, {year}, 
+                    {country}, {dur}, '{dir}', '{script}', {punt}, '{img}')"""
 
         try:
             cursor.execute(sql_query)
@@ -48,7 +50,7 @@ def import_df_to_db(dataFrame, connector, cursor):
 def import_genres(movie_id, value, connector, cursor):
     ''' This function will read all values from 'Genero' column
     in the Excel database, split them using the ',' character in the movies
-    with more than one genre and then populate the table Genero_in_file with the genres found.'''
+    with more than one genre and then populate the table Genre_in_file with the genres found.'''
     
     # Obtain corresponding GeneroID from the new 'Genero' table for each genre in 'value'
     if value != '-':
@@ -71,11 +73,11 @@ def import_genres(movie_id, value, connector, cursor):
             if genre == 'Mejor película' and category == 'Premios - Óscars':
                 genre = 'Oscars - Mejor película'
 
-            sql_query = f'SELECT id FROM Genero WHERE Nombre = \'{genre}\''
+            sql_query = f"SELECT id FROM Genres WHERE Name = '{genre}'"
             res = db.execute(sql_query).fetchone()
             
             if res != None:
-                sql_query = f'''INSERT INTO Genero_in_file (pelicula_id, genero_id) 
+                sql_query = f'''INSERT INTO Genre_in_file (filmID, genreID) 
                             VALUES ({movie_id}, {res[0]})'''
                 try:
                     cursor.execute(sql_query)
@@ -104,27 +106,27 @@ def import_languages(movie_id, category, value, connector, cursor):
     if value == 'Var':
         value = 'Varios'
 
-    # Obtain corresponding LanguageID from the new 'Idioma' table for each language in 'value'
+    # Obtain corresponding LanguageID from the new 'Languages' table for each language in 'value'
     if value != '-':
         if value.find('-') != -1:
             [lang1, lang2] = value.split('-')
-            sql_query = f'SELECT id FROM Idioma WHERE IdiomaAbreviado = \'{lang1}\''
+            sql_query = f"SELECT id FROM Languages WHERE LangShort = '{lang1}'"
             id.append(db.execute(sql_query).fetchone()[0])
 
-            sql_query = f'SELECT id FROM Idioma WHERE IdiomaAbreviado = \'{lang2}\''
+            sql_query = f"SELECT id FROM Languages WHERE LangShort = '{lang2}'"
             id.append(db.execute(sql_query).fetchone()[0])
 
         elif value.find('-') == -1:
-            sql_query = f'SELECT id FROM Idioma WHERE IdiomaAbreviado = \'{value}\''
+            sql_query = f"SELECT id FROM Languages WHERE LangShort = '{value}'"
             id.append(db.execute(sql_query).fetchone()[0])
 
     # Populate Audio_in_file and Subs_in_file with the obtained values
     for i in id:
         if category == 'Audio':
-            sql_query = f'INSERT INTO Audio_in_file (pelicula_id, idioma_id) VALUES ({movie_id}, {i})'
+            sql_query = f'INSERT INTO Audio_in_file (filmID, languageID) VALUES ({movie_id}, {i})'
 
         elif category == 'Subs':
-            sql_query = f'INSERT INTO Subs_in_file (pelicula_id, idioma_id) VALUES ({movie_id}, {i})'
+            sql_query = f'INSERT INTO Subs_in_file (filmID, languageID) VALUES ({movie_id}, {i})'
 
         try:
             cursor.execute(sql_query)
@@ -134,14 +136,13 @@ def import_languages(movie_id, category, value, connector, cursor):
             print(f'Error during the execution of {sql_query}', error)
 
 
-def obtainID(field, value):
+def obtainID(table, field, value):
     ''' Function to obtain the ID for a given 'value' in a given table.
 
     - field: Name of the table in which to look into (which is the same as the column's name within that table)
     - value: Value to look for in the database and obtain its ID.'''
 
-    table = field
-    sql_query = f'SELECT id FROM {table} WHERE {field} = \'{value}\''
+    sql_query = f"SELECT id FROM {table} WHERE {field} = '{value}'"
     id = db.execute(sql_query).fetchone()
 
     return id[0]
@@ -162,11 +163,17 @@ if __name__ == '__main__':
     # Obtain IDs from database for old 'Pais', 'Disco' and 'Calidad' values
     # and update dataframe values
     for i in range(movie_database.shape[0]):
-        movie_database.loc[i, 'Pais'] = obtainID('Pais', movie_database.loc[i, 'Pais'])
-        movie_database.loc[i, 'Disco'] = obtainID('Disco', movie_database.loc[i, 'Disco'])
-        movie_database.loc[i, 'Calidad'] = obtainID('Calidad', movie_database.loc[i, 'Calidad'])
+        movie_database.loc[i, 'Pais'] = obtainID(table='Countries', 
+                                                 field='Country', 
+                                                 value=movie_database.loc[i, 'Pais'])
+        movie_database.loc[i, 'Disco'] = obtainID(table='Storage', 
+                                                  field='Device', 
+                                                  value=movie_database.loc[i, 'Disco'])
+        movie_database.loc[i, 'Calidad'] = obtainID(table='Quality', 
+                                                    field='Quality', 
+                                                    value=movie_database.loc[i, 'Calidad'])
 
-    # Import dataFrame with updated 'Pais', 'Disco' and 'Calidad' values into SQL
+    # Import dataFrame with updated 'Countries', 'Storage' and 'Quality' values into SQL
     import_df_to_db(movie_database, conn, db)
 
     # After the old database is imported into the new one, the following can be done without breaking

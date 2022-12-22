@@ -13,140 +13,155 @@ if __name__ == '__main__':
     try:
         sql_query = '''CREATE TABLE Main (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    Titulo TEXT NOT NULL,
-                    TituloOriginal TEXT NOT NULL,
-                    DiscoID INTEGER NOT NULL,
-                    CalidadID INTEGER NOT NULL, 
+                    Title TEXT NOT NULL,
+                    OriginalTitle TEXT NOT NULL,
+                    StorageID INTEGER NOT NULL,
+                    QualityID INTEGER NOT NULL, 
                     Year INTEGER NOT NULL CHECK(Year>1880),
-                    PaisID INTEGER NOT NULL,
-                    Duracion INTEGER NOT NULL CHECK(Duracion>=0),
+                    CountryID INTEGER NOT NULL,
+                    Length INTEGER NOT NULL CHECK(Length>=0),
                     Director TEXT NOT NULL,
-                    Guion TEXT NOT NULL,
-                    FOREIGN KEY (DiscoID) REFERENCES Disco(id)
+                    Screenwriter TEXT,
+                    Score INTEGER Check(Score>=0 AND Score<=10),
+                    Image TEXT,
+                    FOREIGN KEY (StorageID) REFERENCES Storage(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,
-                    FOREIGN KEY (CalidadID) REFERENCES Calidad(id)
+                    FOREIGN KEY (QualityID) REFERENCES Quality(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,
-                    FOREIGN KEY (PaisID) REFERENCES Pais(id)
+                    FOREIGN KEY (CountryID) REFERENCES Countries(id)
                     ON DELETE SET NULL ON UPDATE CASCADE);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Películas\" table has been created correctly')
+        print('"Main" table has been created correctly')
 
     except sql.Error as error:
-        print('Error while creating the table \"Películas\"', error)
+        print('Error while creating the table "Main"', error)
 
-    # Disco (this approach is called database normalization in sql)
+    # Storage (this approach is called database normalization in sql)
     try:
-        sql_query = '''CREATE TABLE Disco (
+        sql_query = '''CREATE TABLE Storage (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    Disco TEXT NOT NULL UNIQUE);'''
+                    Device TEXT NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Disco\" table has been created correctly')
+        print('"Storage" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table \"Disco\"', error)
+        print('Error while creating the table "Storage"', error)
 
-    # Calidad
+    # Quality
     try:
-        sql_query = '''CREATE TABLE Calidad (
+        sql_query = '''CREATE TABLE Quality (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    Calidad TEXT NOT NULL UNIQUE);'''
+                    Quality TEXT NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Calidad\" table has been created correctly')
+        print('"Quality" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table \"Calidad\"', error)
+        print('Error while creating the table "Quality"', error)
 
-    # Idioma
+    # Language
     try:
-        sql_query = '''CREATE TABLE Idioma (
+        sql_query = '''CREATE TABLE Languages (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    IdiomaAbreviado TEXT NOT NULL,
-                    IdiomaCompleto TEXT NOT NULL);'''
+                    LangShort TEXT NOT NULL,
+                    LangComplete TEXT NOT NULL);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Idioma\" table has been created correctly')
+        print('"Language" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table \"Idioma\"', error)
+        print('Error while creating the table "Language"', error)
 
     # Audio_in_file
     try:
         sql_query = '''CREATE TABLE Audio_in_file (
-                    pelicula_id INTEGER NOT NULL,
-                    idioma_id INTEGER NOT NULL,
-                    FOREIGN KEY (pelicula_id) REFERENCES Main(id)
+                    filmID INTEGER NOT NULL,
+                    languageID INTEGER NOT NULL,
+                    FOREIGN KEY (filmID) REFERENCES Main(id)
                     ON DELETE CASCADE ON UPDATE CASCADE);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Audio_in_file\" table has been created correctly')
+        print('"Audio_in_file" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table \"Audio_in_file\"', error)
+        print('Error while creating the table "Audio_in_file"', error)
 
     # Subs_in_file
     try:
         sql_query = '''CREATE TABLE Subs_in_file (
-                    pelicula_id INTEGER NOT NULL,
-                    idioma_id INTEGER NOT NULL,
-                    FOREIGN KEY (pelicula_id) REFERENCES Main(id)
+                    filmID INTEGER NOT NULL,
+                    languageID INTEGER NOT NULL,
+                    FOREIGN KEY (filmID) REFERENCES Main(id)
                     ON DELETE CASCADE ON UPDATE CASCADE);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Subs_in_file\" table has been created correctly')
+        print('"Subs_in_file" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table \"Subs_in_file\"', error)
+        print('Error while creating the table "Subs_in_file"', error)
 
-    # Pais
+    # Country
     try:
-        sql_query = '''CREATE TABLE Pais (
+        sql_query = '''CREATE TABLE Countries (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    Pais INTEGER NOT NULL UNIQUE);'''
+                    Country INTEGER NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Pais\" table has been created correctly')
+        print('"Country" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table \"Pais\"', error)
+        print('Error while creating the table "Country"', error)
 
-    # Género - plantilla
+    # Genre
     try:
-        sql_query = '''CREATE TABLE Genero (
+        sql_query = '''CREATE TABLE Genres (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    Categoria TEXT NOT NULL,
-                    Nombre TEXT NOT NULL);'''
+                    CategoryID INTEGER NOT NULL,
+                    Name TEXT NOT NULL);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Genero\" table has been created correctly')
+        print('"Genre" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table \"Genero\"', error)
+        print('Error while creating the table "Genre"', error)
 
-    # Género_in_file
+    # Genre - Categories
     try:
-        sql_query = '''CREATE TABLE Genero_in_file (
-                    pelicula_id INTEGER NOT NULL,
-                    genero_id INTEGER NOT NULL,
-                    FOREIGN KEY (pelicula_id) REFERENCES Main(id)
+        sql_query = '''CREATE TABLE Genre_Categories (
+                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    Category TEXT NOT NULL UNIQUE);'''
+
+        db.execute(sql_query)
+        conn.commit()
+        print('"Genre_Categories" table has been created correctly')
+    
+    except sql.Error as error:
+        print('Error while creating the table "Genre_Categories"', error)
+
+    # Genre_in_file
+    try:
+        sql_query = '''CREATE TABLE Genre_in_file (
+                    filmID INTEGER NOT NULL,
+                    genreID INTEGER NOT NULL,
+                    FOREIGN KEY (filmID) REFERENCES Main(id)
                     ON DELETE CASCADE ON UPDATE CASCADE);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('\"Genero_in_file\" table has been created correctly')
+        print('"Genre_in_file" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table \"Genero_in_file\"', error)
+        print('Error while creating the table "Genre_in_file"', error)
 
     db.close()
     conn.close()
