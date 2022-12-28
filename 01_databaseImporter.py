@@ -1,7 +1,8 @@
 ''' After the new database and its tables have been created, export values from the original Access database
-into a file named 'Peliculas.xlsx' and store it in /resources. 
+into a file named 'Peliculas.xlsx' and store it in /resources. It is very important to re-index the whole Excel
+table again before, to avoid having missing values in the Id column.
 
-Then, copy the newly created '00_EmptyDatabase.db' file in its own path (the root) to keep a copy
+Then, copy the newly created '00_EmptyDatabase.db' file in its own path (the root), to keep a copy,
 and rename it '/01_ImportDatabase.db'. Then execute this script to obtain all unique values 
 from the original fields 'Disco', 'Calidad', 'Idioma' and 'Pais' and import their values into the new database.
 
@@ -15,12 +16,12 @@ import sqlite3 as sql
 
 def get_unique_values(col, dataFrame):
     ''' This function will obtain the unique values from a specific column in the original database
-    to populate the new 'Country', 'Language', 'Quality and 'Storage' tables in the new database
+    to populate the new 'Countries', 'Languages', 'Quality and 'Storage' tables in the new database
 
     - col: Name of the column in the original Access database to work with
     - dataFrame: Full original Access database, in a Pandas DataFrame structure'''
 
-    # Obtain different values from 'col' column to insert into the new 'col' table
+    # Obtain unique values from 'col' column to insert into the new 'col' table
     series = dataFrame[-dataFrame.duplicated(col)][col]
 
    # 'IdiomaAudio' (Language) values are processed differently 
@@ -41,11 +42,11 @@ def get_unique_values(col, dataFrame):
 
 
 def update_database(series, table, col):
-    ''' This function will populate the tables 'Country', 'Language', 'Quality and 'Storage' 
+    ''' This function will populate the tables 'Countries', 'Languages', 'Quality and 'Storage' 
     in the new database with the unique values obtained from the original database
     
-    - series: Series of values to insert into the new dataframe's tables
-    - table: Name of the table in which to insert these above mentioned values 
+    - series: Series of values to insert into the new database's tables
+    - table: Name of the table in which to insert these values mentioned above 
     - col: Name of the column, within the table, in which to insert values.'''
 
     # Full languages' names need to be added so the NOT NULL constraint is met

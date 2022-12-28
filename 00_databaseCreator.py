@@ -64,7 +64,7 @@ if __name__ == '__main__':
     except sql.Error as error:
         print('Error while creating the table "Quality"', error)
 
-    # Language
+    # Languages
     try:
         sql_query = '''CREATE TABLE Languages (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -73,10 +73,10 @@ if __name__ == '__main__':
 
         db.execute(sql_query)
         conn.commit()
-        print('"Language" table has been created correctly')
+        print('"Languages" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table "Language"', error)
+        print('Error while creating the table "Languages"', error)
 
     # Audio_in_file
     try:
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     except sql.Error as error:
         print('Error while creating the table "Subs_in_file"', error)
 
-    # Country
+    # Countries
     try:
         sql_query = '''CREATE TABLE Countries (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -116,12 +116,12 @@ if __name__ == '__main__':
 
         db.execute(sql_query)
         conn.commit()
-        print('"Country" table has been created correctly')
+        print('"Countries" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table "Country"', error)
+        print('Error while creating the table "Countries"', error)
 
-    # Genre
+    # Genres
     try:
         sql_query = '''CREATE TABLE Genres (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -130,10 +130,10 @@ if __name__ == '__main__':
 
         db.execute(sql_query)
         conn.commit()
-        print('"Genre" table has been created correctly')
+        print('"Genres" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table "Genre"', error)
+        print('Error while creating the table "Genres"', error)
 
     # Genre - Categories
     try:

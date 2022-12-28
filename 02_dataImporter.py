@@ -16,7 +16,7 @@ import pandas as pd
 import sqlite3 as sql
 
 
-def import_df_to_db(dataFrame, connector, cursor):
+def import_df_to_db(dataFrame):
     ''' After finding the new ID values for the fields 'Quality', 'Storage' and 'Countries'
     the whole database from the Excel file is imported into the new SQL database.'''
 
@@ -40,14 +40,14 @@ def import_df_to_db(dataFrame, connector, cursor):
                     {country}, {dur}, '{dir}', '{script}', {punt}, '{img}')"""
 
         try:
-            cursor.execute(sql_query)
-            connector.commit()
+            db.execute(sql_query)
+            conn.commit()
         
         except sql.Error as error:
             print(f'Error during the execution of {sql_query}', error)
 
 
-def import_genres(movie_id, value, connector, cursor):
+def import_genres(film_id, value):
     ''' This function will read all values from 'Genero' column
     in the Excel database, split them using the ',' character in the movies
     with more than one genre and then populate the table Genre_in_file with the genres found.'''
@@ -78,19 +78,16 @@ def import_genres(movie_id, value, connector, cursor):
             
             if res != None:
                 sql_query = f'''INSERT INTO Genre_in_file (filmID, genreID) 
-                            VALUES ({movie_id}, {res[0]})'''
+                            VALUES ({film_id}, {res[0]})'''
                 try:
-                    cursor.execute(sql_query)
-                    connector.commit()
+                    db.execute(sql_query)
+                    conn.commit()
                 
                 except sql.Error as error:
                     print(f'Error during the execution of {sql_query}', error)
 
-            else:
-                print(f'{sql_query} found nothing')
 
-
-def import_languages(movie_id, category, value, connector, cursor):
+def import_languages(film_id, category, value):
     ''' This function will read all values from 'IdiomaAudio' and 'IdiomSubtitulos' columns
     in the Excel database, split them using the '-' character in the movies
     with two languages in 'Audio' or 'Subs' and then populate the tables 
@@ -99,7 +96,7 @@ def import_languages(movie_id, category, value, connector, cursor):
     id = []
     # To match the new values in the database these two have to be changed,
     # because in the original database they were 'May' and 'Var', instead of 'Maya' and 'Varios'
-    # (see function 'get_individual_values' in /01_ImportDatabase/databaseImporter.py for reference)
+    # (see function 'get_unique_values' in 01_databaseImporter.py for reference)
     if value == 'Maya': 
         value = 'May'
     
@@ -123,23 +120,24 @@ def import_languages(movie_id, category, value, connector, cursor):
     # Populate Audio_in_file and Subs_in_file with the obtained values
     for i in id:
         if category == 'Audio':
-            sql_query = f'INSERT INTO Audio_in_file (filmID, languageID) VALUES ({movie_id}, {i})'
+            sql_query = f'INSERT INTO Audio_in_file (filmID, languageID) VALUES ({film_id}, {i})'
 
         elif category == 'Subs':
-            sql_query = f'INSERT INTO Subs_in_file (filmID, languageID) VALUES ({movie_id}, {i})'
+            sql_query = f'INSERT INTO Subs_in_file (filmID, languageID) VALUES ({film_id}, {i})'
 
         try:
-            cursor.execute(sql_query)
-            connector.commit()
+            db.execute(sql_query)
+            conn.commit()
         
         except sql.Error as error:
             print(f'Error during the execution of {sql_query}', error)
 
 
 def obtainID(table, field, value):
-    ''' Function to obtain the ID for a given 'value' in a given table.
+    ''' Function to obtain the ID for a given 'value' in a given 'table'.
 
-    - field: Name of the table in which to look into (which is the same as the column's name within that table)
+    - table: Name of the table in which to look into
+    - field: Name of the column, within that 'table', in which to look into
     - value: Value to look for in the database and obtain its ID.'''
 
     sql_query = f"SELECT id FROM {table} WHERE {field} = '{value}'"
@@ -174,21 +172,19 @@ if __name__ == '__main__':
                                                     value=movie_database.loc[i, 'Calidad'])
 
     # Import dataFrame with updated 'Countries', 'Storage' and 'Quality' values into SQL
-    import_df_to_db(movie_database, conn, db)
+    import_df_to_db(movie_database)
 
     # After the old database is imported into the new one, the following can be done without breaking
     # any constraints related with FOREIGN KEYS.
     for i in range(movie_database.shape[0]):
         # Obtain Audios and Subs from 'movie_database' for each film 
         # and generate 'Audio_in_file' and 'Subs_in_file' tables
-        import_languages(movie_database.loc[i, 'Id'], 'Audio', 
-                            movie_database.loc[i, 'IdiomaAudio'], conn, db)
+        import_languages(movie_database.loc[i, 'Id'], 'Audio', movie_database.loc[i, 'IdiomaAudio'])
 
-        import_languages(movie_database.loc[i, 'Id'], 'Subs', 
-                            movie_database.loc[i, 'IdiomaSubtitulos'], conn, db)
+        import_languages(movie_database.loc[i, 'Id'], 'Subs', movie_database.loc[i, 'IdiomaSubtitulos'])
 
         # Do the same with genres
-        import_genres(movie_database.loc[i, 'Id'], movie_database.loc[i, 'Genero'], conn, db)
+        import_genres(movie_database.loc[i, 'Id'], movie_database.loc[i, 'Genero'])
 
     print('All data imported into the new database')
 
