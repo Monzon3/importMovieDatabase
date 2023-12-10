@@ -5,7 +5,7 @@ To do this, all reference tables should be looked up in order to exchange the va
 the original database for the new corresponding IDs.
 
 After this is done, the tables Audio_in_file, Genre_in_file and Subs_in_file
-are populated using the information from the original database and the reference tables.
+will be populated using the information from the original database and the reference tables.
 
 Before running this script, copy the newly created '01_ImportDatabase.db' to keep a copy
 and rename it /Test.db.'''
@@ -30,14 +30,14 @@ def import_df_to_db(dataFrame):
         country = dataFrame.loc[i, 'Pais']
         dur = dataFrame.loc[i, 'Duracion']
         dir = dataFrame.loc[i, 'Director'].replace("'","''")
+        score = dataFrame.loc[i, 'Puntuacion']
         script = dataFrame.loc[i, 'Guion'].replace("'","''")
-        punt = dataFrame.loc[i, 'Puntuacion']
         img = dataFrame.loc[i, 'Imagen']
         sql_query = f"""INSERT INTO Main (Title, OriginalTitle, StorageID, QualityID, Year,
                     CountryID, Length, Director, Screenwriter, Score, Image) 
                     VALUES 
                     ('{tit}', '{origTit}', {disc}, {qt}, {year}, 
-                    {country}, {dur}, '{dir}', '{script}', {punt}, '{img}')"""
+                    {country}, {dur}, '{dir}', '{script}', {score}, '{img}')"""
 
         try:
             db.execute(sql_query)
@@ -52,7 +52,7 @@ def import_genres(film_id, value):
     in the Excel database, split them using the ',' character in the movies
     with more than one genre and then populate the table Genre_in_file with the genres found.'''
     
-    # Obtain corresponding GeneroID from the new 'Genero' table for each genre in 'value'
+    # Obtain corresponding GenreID from the new 'Genres' table for each genre in 'value'
     if value != '-':
         genres = value.split(',')[0:-1]    # value always ends with ',' so the last element is not needed
 
@@ -63,7 +63,7 @@ def import_genres(film_id, value):
             category = i[(pos1 + 1):pos2]
             genre = i[(pos2 + 2):]
 
-            # Some genres have changed in the new database, so to find them:
+            # Some genres have changed in the new database, so to be able to find them:
             if genre == 'Palma de Oro': genre = 'Cannes - Palma de Oro'
             if genre == 'Mejor película' and category == 'Premios - Goya': 
                 genre = 'Goya - Mejor película'
@@ -94,7 +94,7 @@ def import_languages(film_id, category, value):
     Audio_in_file and Subs_in_file with the languages found.'''
 
     id = []
-    # To match the new values in the database these two have to be changed,
+    # To match the new values in the database the following two have to be changed,
     # because in the original database they were 'May' and 'Var', instead of 'Maya' and 'Varios'
     # (see function 'get_unique_values' in 01_databaseImporter.py for reference)
     if value == 'Maya': 
@@ -104,7 +104,7 @@ def import_languages(film_id, category, value):
         value = 'Varios'
 
     # Obtain corresponding LanguageID from the new 'Languages' table for each language in 'value'
-    if value != '-':
+    if value != '-':        # Not empty
         if value.find('-') != -1:
             [lang1, lang2] = value.split('-')
             sql_query = f"SELECT id FROM Languages WHERE LangShort = '{lang1}'"
@@ -134,7 +134,7 @@ def import_languages(film_id, category, value):
 
 
 def obtainID(table, field, value):
-    ''' Function to obtain the ID for a given 'value' in a given 'table'.
+    ''' Function to obtain the ID of a given 'value' in a given 'table'.
 
     - table: Name of the table in which to look into
     - field: Name of the column, within that 'table', in which to look into
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     # # Connect with 'test_database' which is in [Paths] section from .ini file
     [conn, db] = dbConnector.connect_to_db('test_database')
 
-    # Obtain IDs from database for old 'Pais', 'Disco' and 'Calidad' values
+    # Obtain IDs from database for former 'Pais', 'Disco' and 'Calidad' values
     # and update dataframe values
     for i in range(movie_database.shape[0]):
         movie_database.loc[i, 'Pais'] = obtainID(table='Countries', 
@@ -174,13 +174,12 @@ if __name__ == '__main__':
     # Import dataFrame with updated 'Countries', 'Storage' and 'Quality' values into SQL
     import_df_to_db(movie_database)
 
-    # After the old database is imported into the new one, the following can be done without breaking
+    # After the old database has been imported into the new one, the following can be done without breaking
     # any constraints related with FOREIGN KEYS.
     for i in range(movie_database.shape[0]):
         # Obtain Audios and Subs from 'movie_database' for each film 
         # and generate 'Audio_in_file' and 'Subs_in_file' tables
         import_languages(movie_database.loc[i, 'Id'], 'Audio', movie_database.loc[i, 'IdiomaAudio'])
-
         import_languages(movie_database.loc[i, 'Id'], 'Subs', movie_database.loc[i, 'IdiomaSubtitulos'])
 
         # Do the same with genres

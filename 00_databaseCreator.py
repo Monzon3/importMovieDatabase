@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # Main table
     try:
         sql_query = '''CREATE TABLE Main (
-                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Title TEXT NOT NULL,
                     OriginalTitle TEXT NOT NULL,
                     StorageID INTEGER NOT NULL,
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Storage (this approach is called database normalization in sql)
     try:
         sql_query = '''CREATE TABLE Storage (
-                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Device TEXT NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # Quality
     try:
         sql_query = '''CREATE TABLE Quality (
-                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Quality TEXT NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # Languages
     try:
         sql_query = '''CREATE TABLE Languages (
-                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     LangShort TEXT NOT NULL,
                     LangComplete TEXT NOT NULL);'''
 
@@ -84,6 +84,8 @@ if __name__ == '__main__':
                     filmID INTEGER NOT NULL,
                     languageID INTEGER NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE,
+                    FOREIGN KEY (languageID) REFERENCES Languages(id)
                     ON DELETE CASCADE ON UPDATE CASCADE);'''
 
         db.execute(sql_query)
@@ -99,6 +101,8 @@ if __name__ == '__main__':
                     filmID INTEGER NOT NULL,
                     languageID INTEGER NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE,
+                    FOREIGN KEY (languageID) REFERENCES Languages(id)
                     ON DELETE CASCADE ON UPDATE CASCADE);'''
 
         db.execute(sql_query)
@@ -111,8 +115,8 @@ if __name__ == '__main__':
     # Countries
     try:
         sql_query = '''CREATE TABLE Countries (
-                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    Country INTEGER NOT NULL UNIQUE);'''
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Country TEXT NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
         conn.commit()
@@ -124,9 +128,11 @@ if __name__ == '__main__':
     # Genres
     try:
         sql_query = '''CREATE TABLE Genres (
-                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     CategoryID INTEGER NOT NULL,
-                    Name TEXT NOT NULL);'''
+                    Name TEXT NOT NULL,
+                    FOREIGN KEY (CategoryID) REFERENCES Genre_Categories(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE);'''
 
         db.execute(sql_query)
         conn.commit()
@@ -138,7 +144,7 @@ if __name__ == '__main__':
     # Genre - Categories
     try:
         sql_query = '''CREATE TABLE Genre_Categories (
-                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Category TEXT NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
@@ -154,6 +160,8 @@ if __name__ == '__main__':
                     filmID INTEGER NOT NULL,
                     genreID INTEGER NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE,
+                    FOREIGN KEY (genreID) REFERENCES Genres(id)
                     ON DELETE CASCADE ON UPDATE CASCADE);'''
 
         db.execute(sql_query)
