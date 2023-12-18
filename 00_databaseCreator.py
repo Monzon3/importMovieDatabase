@@ -26,7 +26,7 @@ if __name__ == '__main__':
                     Image TEXT,
                     FOREIGN KEY (StorageID) REFERENCES Storage(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,
-                    FOREIGN KEY (QualityID) REFERENCES Quality(id)
+                    FOREIGN KEY (QualityID) REFERENCES Qualities(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,
                     FOREIGN KEY (CountryID) REFERENCES Countries(id)
                     ON DELETE SET NULL ON UPDATE CASCADE);'''
@@ -51,18 +51,18 @@ if __name__ == '__main__':
     except sql.Error as error:
         print('Error while creating the table "Storage"', error)
 
-    # Quality
+    # Qualities
     try:
-        sql_query = '''CREATE TABLE Quality (
+        sql_query = '''CREATE TABLE Qualities (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Quality TEXT NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
         conn.commit()
-        print('"Quality" table has been created correctly')
+        print('"Qualities" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table "Quality"', error)
+        print('Error while creating the table "Qualities"', error)
 
     # Languages
     try:

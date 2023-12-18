@@ -16,7 +16,7 @@ import sqlite3 as sql
 
 def get_unique_values(col, dataFrame):
     ''' This function will obtain the unique values from a specific column in the original database
-    to populate the new 'Countries', 'Languages', 'Quality and 'Storage' tables in the new database
+    to populate the new 'Countries', 'Languages', 'Qualities and 'Storage' tables in the new database
 
     - col: Name of the column in the original Access database to work with
     - dataFrame: Full original Access database, in a Pandas DataFrame structure'''
@@ -42,7 +42,7 @@ def get_unique_values(col, dataFrame):
 
 
 def update_database(series, table, col):
-    ''' This function will populate the tables 'Countries', 'Languages', 'Quality and 'Storage' 
+    ''' This function will populate the tables 'Countries', 'Languages', 'Qualities' and 'Storage' 
     in the new database with the unique values obtained from the original database
     
     - series: Series of values to insert into the new database's tables
@@ -125,13 +125,13 @@ if __name__ == '__main__':
 
     # Import the unique values into the new database
     update_database(disc, 'Storage', 'Device')
-    update_database(quality, 'Quality', 'Quality')
+    update_database(quality, 'Qualities', 'Quality')
     update_database(lang, 'Languages', 'LangShort')
     update_database(country, 'Countries', 'Country')
     update_genres()
 
     str1 = 'If no errors have been shown, all values have been correctly imported'
-    str2 = "into the tables 'Quality', 'Storage', 'Languages', 'Countries' and 'Genres'"
+    str2 = "into the tables 'Qualities', 'Storage', 'Languages', 'Countries' and 'Genres'"
     print(' '.join([str1, str2]))
 
     db.close()

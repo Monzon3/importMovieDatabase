@@ -17,7 +17,7 @@ import sqlite3 as sql
 
 
 def import_df_to_db(dataFrame):
-    ''' After finding the new ID values for the fields 'Quality', 'Storage' and 'Countries'
+    ''' After finding the new ID values for the fields 'Quality', 'Storage' and 'Country'
     the whole database from the Excel file is imported into the new SQL database.'''
 
     for i in range(dataFrame.shape[0]):
@@ -167,11 +167,11 @@ if __name__ == '__main__':
         movie_database.loc[i, 'Disco'] = obtainID(table='Storage', 
                                                   field='Device', 
                                                   value=movie_database.loc[i, 'Disco'])
-        movie_database.loc[i, 'Calidad'] = obtainID(table='Quality', 
+        movie_database.loc[i, 'Calidad'] = obtainID(table='Qualities', 
                                                     field='Quality', 
                                                     value=movie_database.loc[i, 'Calidad'])
 
-    # Import dataFrame with updated 'Countries', 'Storage' and 'Quality' values into SQL
+    # Import dataFrame with updated 'Countries', 'Storage' and 'Qualities' values into SQL
     import_df_to_db(movie_database)
 
     # After the old database has been imported into the new one, the following can be done without breaking
