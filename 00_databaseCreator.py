@@ -68,8 +68,8 @@ if __name__ == '__main__':
     try:
         sql_query = '''CREATE TABLE Languages (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    LangShort TEXT NOT NULL,
-                    LangComplete TEXT NOT NULL);'''
+                    LangShort TEXT NOT NULL UNIQUE,
+                    LangComplete TEXT NOT NULL UNIQUE);'''
 
         db.execute(sql_query)
         conn.commit()
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         sql_query = '''CREATE TABLE Genres (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     CategoryID INTEGER NOT NULL,
-                    Name TEXT NOT NULL,
+                    Name TEXT NOT NULL UNIQUE,
                     FOREIGN KEY (CategoryID) REFERENCES Genre_Categories(id)
                     ON DELETE CASCADE ON UPDATE CASCADE);'''
 
