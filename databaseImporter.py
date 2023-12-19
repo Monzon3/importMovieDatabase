@@ -40,16 +40,21 @@ def get_unique_values(col, dataFrame):
     return series
 
 
-def update_database(series, table, col):
+def update_database(conn, db, series, table, col):
     ''' This function will populate the tables 'Countries', 'Languages', 'Qualities' and 'Storage' 
     in the new database with the unique values obtained from the original database
     
+    - conn: MySQL connector
+    - db: MySQL cursor
     - series: Series of values to insert into the new database's tables
     - table: Name of the table in which to insert these values mentioned above 
     - col: Name of the column, within the table, in which to insert values.'''
 
     # Full languages' names need to be added so the NOT NULL constraint is met
     if table == 'Languages':
+        # Load the configuration.ini file
+        config = ConfigParser()
+        config.read('./config/configuration.ini')
         with open(config.get('Aux_files', 'languages_list'), encoding = 'utf-8') as f:
             lang_list = json.load(f)
 
@@ -68,11 +73,15 @@ def update_database(series, table, col):
             print(f'Error while updating the table {table} using:\n {sql_query}: ', error)
 
 
-def update_genres():
+def update_genres(conn, db, list_genres):
     ''' This function will populate the tables 'Genres' and 'Genres_Categories' 
-    from the database using the .json file 'ListGenres', where all options should be included.'''
+    from the database using the .json file 'ListGenres', where all options should be included.
+    
+    - conn: MySQL connector
+    - db: MySQL cursor
+    - list_genres: Path from Configuration.ini to the ListGenres.json'''
 
-    with open(config.get('Aux_files', 'genres_list'), encoding = 'utf-8') as f:
+    with open(list_genres, encoding = 'utf-8') as f:
         genres = json.load(f)
 
     list = []
@@ -105,7 +114,7 @@ def update_genres():
             print(f'Error while updating the table \'Genres\' using:\n {sql_query}: ', error)
 
 
-if __name__ == '__main__':
+def import_database():
     print('- Importing database structure and secondary tables...')
     # Load the configuration.ini file
     config = ConfigParser()
@@ -125,11 +134,11 @@ if __name__ == '__main__':
     country = get_unique_values('Pais', movie_database)
 
     # Import the unique values into the new database
-    update_database(disc, 'Storage', 'Device')
-    update_database(quality, 'Qualities', 'Quality')
-    update_database(lang, 'Languages', 'LangShort')
-    update_database(country, 'Countries', 'Country')
-    update_genres()
+    update_database(conn, db, disc, 'Storage', 'Device')
+    update_database(conn, db, quality, 'Qualities', 'Quality')
+    update_database(conn, db, lang, 'Languages', 'LangShort')
+    update_database(conn, db, country, 'Countries', 'Country')
+    update_genres(conn, db, config.get('Aux_files', 'genres_list'))
 
     str1 = 'If no errors have been shown, all values have been correctly imported'
     str2 = "into the tables 'Qualities', 'Storage', 'Languages', 'Countries' and 'Genres'"

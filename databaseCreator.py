@@ -4,7 +4,7 @@ The new empty database is created as 00_EmptyDatabase.db.'''
 import common.dbConnector as dbConnector
 import pymysql as sql
 
-if __name__ == '__main__':
+def create_tables():
     # Connect to MySQL 'MovieDB'
     [conn, db] = dbConnector.connect_to_db()
 
