@@ -8,26 +8,28 @@ the database into their original text values.'''
 from configparser import ConfigParser
 import common.dbConnector as dbConnector
 import pandas as pd
+import pymysql as sql
 
 def obtain_genres(film_id):
     ''' This function will get the ID of the movie from the new database, 
     search into Genre_in_file for that ID and return all values found into one string.
     If there were more than one genre, they shall be separated by a comma, to match the original ones.'''
 
-    sql_query = f"SELECT genreID from Genre_in_file WHERE filmID = '{film_id}'"
+    sql_query = f"SELECT genreID from MovieDB.Genre_in_file WHERE filmID = '{film_id}'"
     db.execute(sql_query)
     record = db.fetchall()
 
     genres = []
     if len(record) != 0:
         for i in record:
-            sql_query = f"SELECT Name FROM Genres WHERE id = '{i[0]}'"
+            sql_query = f"SELECT Name FROM MovieDB.Genres WHERE id = '{i[0]}'"
             sql_query = f'''SELECT Genre_Categories.Category, Genres.Name 
-                        FROM Genres 
-                        INNER JOIN Genre_Categories 
+                        FROM MovieDB.Genres 
+                        INNER JOIN MovieDB.Genre_Categories 
                         ON Genres.CategoryID=Genre_Categories.id
                         WHERE Genres.id={i[0]}'''
-            genres_raw = db.execute(sql_query).fetchall()
+            db.execute(sql_query)
+            genres_raw = db.fetchall()
             # Get values out of the Tuple and into str to modify them
             genre1 = genres_raw[0][0]
             genre2 = genres_raw[0][1]
@@ -80,15 +82,16 @@ def obtain_languages(film_id):
     audios = "-"
     subs = "-"
     for category in ["Audio", "Subs"]:
-        sql_query = f"SELECT languageID from {category}_in_file WHERE filmID = '{film_id}'"
+        sql_query = f"SELECT languageID from MovieDB.{category}_in_file WHERE filmID = '{film_id}'"
         db.execute(sql_query)
         record = db.fetchall()
 
         lang = []
         if len(record) != 0:
             for i in record:
-                sql_query = f"SELECT LangShort FROM Languages WHERE id = '{i[0]}'"
-                res = db.execute(sql_query).fetchone()[0]
+                sql_query = f"SELECT LangShort FROM MovieDB.Languages WHERE id = '{i[0]}'"
+                db.execute(sql_query)
+                res = db.fetchone()[0]
                 # The following is done to match the original values in the database 
                 # See function 'import_languages' from 02_dataImporter.py
                 if res == 'May': 
@@ -119,13 +122,15 @@ def obtain_val(table, field, id):
     - field: Name of the column, within that 'table', in which to look into
     - id: ID to look for in the database and obtain its original text value.'''
 
-    sql_query = f"SELECT {field} FROM {table} WHERE id = '{id}'"
-    val = db.execute(sql_query).fetchone()
+    sql_query = f"SELECT {field} FROM MovieDB.{table} WHERE id = '{id}'"
+    db.execute(sql_query)
+    val = db.fetchone()
 
     return val[0]
 
 
 if __name__ == '__main__':
+    print('- Checking the values from MySQL are exactly the same as those in the Original Excel database...')
     # Load the configuration.ini file
     config = ConfigParser()
     config.read('./config/configuration.ini')
@@ -134,23 +139,23 @@ if __name__ == '__main__':
     excel_path = config.get('Aux_files', 'excel_database')
     original_database = pd.read_excel(excel_path)
 
-    # # Connect with 'test_database' which is in [Paths] section from .ini file
-    [conn, db] = dbConnector.connect_to_db('test_database')
+    # Connect to MySQL 'MovieDB'
+    [conn, db] = dbConnector.connect_to_db()
 
     # Obtain values from database for new 'Pais', 'Disco' and 'Calidad' ID values
     # and update dataframe values
-    new_database = pd.read_sql_query('SELECT * FROM Main', conn) 
+    new_database = pd.read_sql_query('SELECT * FROM MovieDB.Main', conn) 
 
     for i in range(new_database.shape[0]):
         new_database.loc[i, 'CountryID'] = obtain_val(table='Countries', 
-                                                     field='Country', 
-                                                     id=new_database.loc[i, 'CountryID'])
+                                                    field='Country', 
+                                                    id=new_database.loc[i, 'CountryID'])
         new_database.loc[i, 'StorageID'] = obtain_val(table='Storage', 
-                                                     field='Device', 
-                                                     id=new_database.loc[i, 'StorageID'])
+                                                    field='Device', 
+                                                    id=new_database.loc[i, 'StorageID'])
         new_database.loc[i, 'QualityID'] = obtain_val(table='Qualities', 
-                                                     field='Quality', 
-                                                     id=new_database.loc[i, 'QualityID'])
+                                                    field='Quality', 
+                                                    id=new_database.loc[i, 'QualityID'])
 
     # A different function is used to get the Languages and Genres for each film
     # First of all add 'IdiomaAudio', 'IdiomaSubtitulos' and 'Genre' columns 
@@ -177,10 +182,12 @@ if __name__ == '__main__':
     diff = df[df['_merge']!='both']
     
     if diff.shape[0]>0:
-        print('Se han encontrado diferencias en las películas siguientes (por ID):')
+        print('Differences have been found in the following movies (by ID):')
         print(diff.loc[:, 'Id'])
     else:
-        print('¡Las dos bases de datos son idénticas!')
+        print('¡Both databases are exactly the same!')
 
     db.close()
     conn.close()
+
+    print("\nDisconnected from database 'MovieDB'\n")

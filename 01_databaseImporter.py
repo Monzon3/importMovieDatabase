@@ -2,17 +2,16 @@
 into a file named 'Peliculas.xlsx' and store it in /resources. It is very important to re-index the whole Excel
 table again before, to avoid having missing values in the Id column.
 
-Then, copy the newly created '00_EmptyDatabase.db' file in its own path (the root), to keep a copy,
-and rename it '/01_ImportDatabase.db'. Then execute this script to obtain all unique values 
+Then execute this script to obtain all unique values 
 from the original fields 'Disco', 'Calidad', 'Idioma' and 'Pais' and import their values into the new database.
 
-Finally, the genres table is also populated with the values from the .json file 'ListGenres'.'''
+Finally, the Genres table is also populated with the values from the .json file 'ListGenres'.'''
 
 from configparser import ConfigParser
 import common.dbConnector as dbConnector
 import json
 import pandas as pd
-import sqlite3 as sql
+import pymysql as sql
 
 def get_unique_values(col, dataFrame):
     ''' This function will obtain the unique values from a specific column in the original database
@@ -57,10 +56,10 @@ def update_database(series, table, col):
     for val in series:
         try:
             if table == 'Languages':
-                sql_query = f'''INSERT INTO {table} ({col}, LangComplete)
+                sql_query = f'''INSERT INTO MovieDB.{table} ({col}, LangComplete)
                             VALUES (\'{val}\', \'{lang_list[val]}\')'''
             else:
-                sql_query = f'INSERT INTO {table} ({col}) VALUES (\'{val}\')'
+                sql_query = f'INSERT INTO MovieDB.{table} ({col}) VALUES (\'{val}\')'
             
             db.execute(sql_query)
             conn.commit()
@@ -80,7 +79,7 @@ def update_genres():
     for i in genres.keys():
         if genres[i]['Category'] not in list: 
             list.append(genres[i]['Category'])
-            sql_query = f'''INSERT INTO Genre_Categories (Category) VALUES 
+            sql_query = f'''INSERT INTO MovieDB.Genre_Categories (Category) VALUES 
                             (\'{genres[i]['Category']}\')'''
             try:
                 db.execute(sql_query)
@@ -90,12 +89,13 @@ def update_genres():
                 print(f'Error while updating the table \'Genre_Categories\' using: \n {sql_query}: ', error)
 
         try:
-            sql_query = f'''SELECT id FROM Genre_Categories 
+            sql_query = f'''SELECT id FROM MovieDB.Genre_Categories 
                             WHERE Category = \'{genres[i]['Category']}\'''' 
 
-            res = db.execute(sql_query).fetchone()
+            db.execute(sql_query)
+            res = db.fetchone()
 
-            sql_query = f'''INSERT INTO Genres (CategoryID, Name) VALUES 
+            sql_query = f'''INSERT INTO MovieDB.Genres (CategoryID, Name) VALUES 
                             ({res[0]}, \'{genres[i]['Name']}\')''' 
 
             db.execute(sql_query)
@@ -106,12 +106,13 @@ def update_genres():
 
 
 if __name__ == '__main__':
+    print('- Importing database structure and secondary tables...')
     # Load the configuration.ini file
     config = ConfigParser()
     config.read('./config/configuration.ini')
 
-    # Connect with 'import_database' which is found in the [Paths] section of .ini file
-    [conn, db] = dbConnector.connect_to_db('import_database')
+    # Connect to MySQL 'MovieDB'
+    [conn, db] = dbConnector.connect_to_db()
 
     # Import data from Excel file (obtained from the original Access database)
     excel_path = config.get('Aux_files', 'excel_database')
@@ -136,3 +137,4 @@ if __name__ == '__main__':
 
     db.close()
     conn.close()
+    print("\nDisconnected from database 'MovieDB'\n")
