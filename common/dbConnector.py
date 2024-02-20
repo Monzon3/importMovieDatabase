@@ -1,37 +1,27 @@
-from configparser import ConfigParser
-import sqlite3 as sql
+from dotenv import load_dotenv
+import os
+import pymysql
 
+load_dotenv()
 
-def connect_to_db(db_name):
+def connect_to_db():
     ''' This function returns the connector and cursor objects to work with the database 
 
     - db_name: The name of the database path in the Configuration.ini file.'''
 
-    # Read path from .ini Config file
-    config = ConfigParser()
-    config.read('./config/configuration.ini')
-    db_path = config.get('Paths', db_name)
+    MySQL_hostname = '127.0.0.1'
+    sql_username = os.getenv("SQL_ADMIN_USERNAME")
+    sql_password = os.getenv("SQL_ADMIN_PASSWORD")
+    sql_database = "MovieDB"
 
     # Connect with the database
-    connector = sql.connect(db_path)
-    cursor = connector.cursor()
-    print(f'Connected to database \'{db_path}\'')
+    connector = pymysql.connect(host=MySQL_hostname,
+                        port=3306, 
+                        user=sql_username,
+                        passwd=sql_password, 
+                        db=sql_database)
 
-    # Always enable foreign keys
-    enable_fk(cursor)                                                 
+    cursor = connector.cursor()
+    print(f'Connected to database \'{sql_database}\' \n')                                       
 
     return connector, cursor
-
-
-def enable_fk(db_cursor):
-    ''' This function enables the usage of foreign keys in the database 
-    and then checks whether they have been successfully enabled or not.'''
-
-    sql_command = 'PRAGMA foreign_keys = ON'
-    db_cursor.execute(sql_command)
-
-    sql_command = 'PRAGMA foreign_keys'
-    fkInfo = db_cursor.execute(sql_command)
-    for i in fkInfo:
-        if i[0] == 1:
-            print('Foreign keys have been successfully enabled\n')
