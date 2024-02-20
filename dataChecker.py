@@ -193,7 +193,7 @@ def check_data():
         print('Differences have been found in the following movies (by ID):')
         print(diff.loc[:, 'Id'])
     else:
-        print('¡Both databases are exactly the same!')
+        print('Both databases are exactly the same!')
 
     db.close()
     conn.close()
