@@ -1,9 +1,9 @@
-import databaseCreator
-import dataImporter
-import databaseImporter
-import dataChecker
+import functions.databaseCreator as creator
+import functions.dataImporter as dataImporter
+import functions.databaseImporter as dbImporter
+import functions.dataChecker as checker
 
-databaseCreator.create_tables()
-databaseImporter.import_database()
+creator.create_tables()
+dbImporter.import_database()
 dataImporter.import_data()
-dataChecker.check_data()
+checker.check_data()
