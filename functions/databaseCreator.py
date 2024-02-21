@@ -178,6 +178,22 @@ def create_tables():
     except sql.Error as error:
         print('Error while creating the table "Genre_in_file"', error)
 
+    # Users
+    try:
+        sql_query = '''CREATE TABLE MovieDB.Users (
+                    id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                    Name VARCHAR(20) NOT NULL UNIQUE,
+                    Password VARCHAR (50) NOT NULL UNIQUE,
+                    Email VARCHAR (40) NOT NULL UNIQUE,
+                    PRIMARY KEY(id));'''
+
+        db.execute(sql_query)
+        conn.commit()
+        print('- "Genre_Categories" table has been created correctly')
+    
+    except sql.Error as error:
+        print('Error while creating the table "Genre_Categories"', error)
+
     db.close()
     conn.close()
     print("\nDisconnected from database 'MovieDB'\n")

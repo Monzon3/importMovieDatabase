@@ -12,7 +12,7 @@ def connect_to_db():
     MySQL_hostname = '127.0.0.1'
     sql_username = os.getenv("SQL_ADMIN_USERNAME")
     sql_password = os.getenv("SQL_ADMIN_PASSWORD")
-    sql_database = "MovieDB"
+    sql_database = os.getenv("MYSQL_DB")
 
     # Connect with the database
     connector = pymysql.connect(host=MySQL_hostname,
