@@ -9,7 +9,7 @@ def connect_to_db():
 
     - db_name: The name of the database path in the Configuration.ini file.'''
 
-    MySQL_hostname = '127.0.0.1'
+    MySQL_hostname = 'db'   # The name of the mysql Docker container
     sql_username = os.getenv("SQL_ADMIN_USERNAME")
     sql_password = os.getenv("SQL_ADMIN_PASSWORD")
     sql_database = os.getenv("MYSQL_DB")
