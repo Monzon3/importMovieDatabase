@@ -5,9 +5,7 @@ import pymysql
 load_dotenv()
 
 def connect_to_db():
-    ''' This function returns the connector and cursor objects to work with the database 
-
-    - db_name: The name of the database path in the Configuration.ini file.'''
+    ''' This function returns the connector and cursor objects to work with the database'''
 
     MySQL_hostname = 'db'   # The name of the mysql Docker container
     sql_username = os.getenv("SQL_ADMIN_USERNAME")

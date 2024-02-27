@@ -4,7 +4,7 @@ the real data from the Access database is imported into the new "Main" table.
 To do this, all reference tables should be looked up in order to exchange the values from
 the original database for the new corresponding IDs.
 
-After this is done, the tables Audio_in_file, Genre_in_file and Subs_in_file
+After this is done, the tables Audio_in_movie, Genre_in_movie and Subs_in_movie
 will be populated using the information from the original database and the reference tables.'''
 
 from configparser import ConfigParser
@@ -49,7 +49,7 @@ def import_df_to_db(conn, db, dataFrame):
 def import_genres(conn, db, film_id, value):
     ''' This function will read all values from 'Genero' column
     in the Excel database, split them using the ',' character in the movies
-    with more than one genre and then populate the table Genre_in_file with the genres found.
+    with more than one genre and then populate the table Genre_in_movie with the genres found.
     
     - conn: MySQL connector
     - db: MySQL cursor'''
@@ -80,7 +80,7 @@ def import_genres(conn, db, film_id, value):
             res = db.fetchone()
             
             if res != None:
-                sql_query = f'''INSERT INTO MovieDB.Genre_in_file (filmID, genreID) 
+                sql_query = f'''INSERT INTO MovieDB.Genre_in_movie (filmID, genreID) 
                             VALUES ({film_id}, {res[0]})'''
                 try:
                     db.execute(sql_query)
@@ -94,7 +94,7 @@ def import_languages(conn, db, film_id, category, value):
     ''' This function will read all values from 'IdiomaAudio' and 'IdiomSubtitulos' columns
     in the Excel database, split them using the '-' character in the movies
     with two languages in 'Audio' or 'Subs' and then populate the tables 
-    Audio_in_file and Subs_in_file with the languages found.
+    Audio_in_movie and Subs_in_movie with the languages found.
     
     - conn: MySQL connector
     - db: MySQL cursor'''
@@ -126,13 +126,13 @@ def import_languages(conn, db, film_id, category, value):
             db.execute(sql_query)
             id.append(db.fetchone()[0])
 
-    # Populate Audio_in_file and Subs_in_file with the obtained values
+    # Populate Audio_in_movie and Subs_in_movie with the obtained values
     for i in id:
         if category == 'Audio':
-            sql_query = f'INSERT INTO MovieDB.Audio_in_file (filmID, languageID) VALUES ({film_id}, {i})'
+            sql_query = f'INSERT INTO MovieDB.Audio_in_movie (filmID, languageID) VALUES ({film_id}, {i})'
 
         elif category == 'Subs':
-            sql_query = f'INSERT INTO MovieDB.Subs_in_file (filmID, languageID) VALUES ({film_id}, {i})'
+            sql_query = f'INSERT INTO MovieDB.Subs_in_movie (filmID, languageID) VALUES ({film_id}, {i})'
 
         try:
             db.execute(sql_query)
@@ -193,7 +193,7 @@ def import_data():
     # any constraints related with FOREIGN KEYS.
     for i in range(movie_database.shape[0]):
         # Obtain Audios and Subs from 'movie_database' for each film 
-        # and generate 'Audio_in_file' and 'Subs_in_file' tables
+        # and generate 'Audio_in_movie' and 'Subs_in_movie' tables
         import_languages(conn, db, movie_database.loc[i, 'Id'], 'Audio', movie_database.loc[i, 'IdiomaAudio'])
         import_languages(conn, db, movie_database.loc[i, 'Id'], 'Subs', movie_database.loc[i, 'IdiomaSubtitulos'])
 

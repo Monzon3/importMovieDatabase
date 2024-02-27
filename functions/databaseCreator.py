@@ -96,9 +96,9 @@ def create_tables():
     except sql.Error as error:
         print('Error while creating the table "Languages"', error)
 
-    # Audio_in_file
+    # Audio_in_movie
     try:
-        sql_query = '''CREATE TABLE MovieDB.Audio_in_file (
+        sql_query = '''CREATE TABLE MovieDB.Audio_in_movie (
                     filmID SMALLINT UNSIGNED NOT NULL,
                     languageID TINYINT UNSIGNED NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
@@ -108,14 +108,14 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Audio_in_file" table has been created correctly')
+        print('- "Audio_in_movie" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table "Audio_in_file"', error)
+        print('Error while creating the table "Audio_in_movie"', error)
 
-    # Subs_in_file
+    # Subs_in_movie
     try:
-        sql_query = '''CREATE TABLE MovieDB.Subs_in_file (
+        sql_query = '''CREATE TABLE MovieDB.Subs_in_movie (
                     filmID SMALLINT UNSIGNED NOT NULL,
                     languageID TINYINT UNSIGNED NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
@@ -125,10 +125,10 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Subs_in_file" table has been created correctly')
+        print('- "Subs_in_movie" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table "Subs_in_file"', error)
+        print('Error while creating the table "Subs_in_movie"', error)
 
     # Genre - Categories
     try:
@@ -161,9 +161,9 @@ def create_tables():
     except sql.Error as error:
         print('Error while creating the table "Genres"', error)
 
-    # Genre_in_file
+    # Genre_in_movie
     try:
-        sql_query = '''CREATE TABLE MovieDB.Genre_in_file (
+        sql_query = '''CREATE TABLE MovieDB.Genre_in_movie (
                     filmID SMALLINT UNSIGNED NOT NULL,
                     genreID TINYINT UNSIGNED NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
@@ -173,10 +173,10 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Genre_in_file" table has been created correctly')
+        print('- "Genre_in_movie" table has been created correctly')
     
     except sql.Error as error:
-        print('Error while creating the table "Genre_in_file"', error)
+        print('Error while creating the table "Genre_in_movie"', error)
 
     # Users
     try:

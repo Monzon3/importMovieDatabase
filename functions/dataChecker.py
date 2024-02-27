@@ -12,12 +12,12 @@ import pymysql as sql
 
 def obtain_genres(db, film_id):
     ''' This function will get the ID of the movie from the new database, 
-    search into Genre_in_file for that ID and return all values found into one string.
+    search into Genre_in_movie for that ID and return all values found into one string.
     If there were more than one genre, they shall be separated by a comma, to match the original ones.
     
     - db: MySQL cursor'''
 
-    sql_query = f"SELECT genreID from MovieDB.Genre_in_file WHERE filmID = '{film_id}'"
+    sql_query = f"SELECT genreID from MovieDB.Genre_in_movie WHERE filmID = '{film_id}'"
     db.execute(sql_query)
     record = db.fetchall()
 
@@ -76,7 +76,7 @@ def obtain_genres(db, film_id):
 
 def obtain_languages(db, film_id):
     ''' This function will get the ID of the movie from the new database, search into
-    audio_in_file and subs_in_file tables for that ID and return all values found into one string. 
+    Audio_in_movie and Subs_in_movie tables for that ID and return all values found into one string. 
     If there were more than one language, they shall be separated with a hyphen.
     
     - db: MySQL cursor'''
@@ -86,7 +86,7 @@ def obtain_languages(db, film_id):
     audios = "-"
     subs = "-"
     for category in ["Audio", "Subs"]:
-        sql_query = f"SELECT languageID from MovieDB.{category}_in_file WHERE filmID = '{film_id}'"
+        sql_query = f"SELECT languageID from MovieDB.{category}_in_movie WHERE filmID = '{film_id}'"
         db.execute(sql_query)
         record = db.fetchall()
 
@@ -172,7 +172,7 @@ def check_data():
     new_database.insert(12, 'Genre', '') 
 
     for i in range(new_database.shape[0]):
-        # Obtain Audios and Subs IDs from 'Audio_in_file' and 'Subs_in_file' tables 
+        # Obtain Audios and Subs IDs from 'Audio_in_movie' and 'Subs_in_movie' tables 
         # for each film in new_database and get their original text values from 'Languages' table
         audios, subs = obtain_languages(db, new_database.loc[i, 'id'])
         new_database.loc[i, 'IdiomaAudio'] = audios
