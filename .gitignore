@@ -3,6 +3,8 @@ __pycache__/
 
 # App files
 .env
-Ideas.txt
 resources/Peliculas.xlsx
 resources/Peliculas_New.xlsx
+
+# Docker files
+.volumes/

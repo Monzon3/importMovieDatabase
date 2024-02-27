@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: app
+    tty: true
+    links: 
+      - db
+      
+  db:
+    restart: always
+    container_name: mysql
+    image: mysql
+    ports: 
+      - '3310:3306'
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DB}
+      - MYSQL_USER=${SQL_ADMIN_USERNAME}
+      - MYSQL_PASSWORD=${SQL_ADMIN_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}
+    volumes:
+      - ../.volumes/.mysql:/var/lib/mysql
