@@ -1,24 +1,5 @@
 version: '3.9'
 services:
-  #api:
-  #  build:
-  #    context: .
-  #    dockerfile: ./Dockerfile
-  #    #args:
-  #      # none neede
-  #  container_name: api
-  #  restart: always
-  #  volumes:
-  #    - ./MovieDatabase:/MovieDatabase
-  #  environment:
-  #    - SQL_ADMIN_USERNAME
-  #    - SQL_ADMIN_PASSWORD 
-  #  command: uvicorn api:app --reload --host 0.0.0.0 --port 8000
-  #  ports:
-  #    - "3000:8000"
-  #  links:
-  #    - mongo
-
   app:
     build:
       context: .
@@ -40,4 +21,4 @@ services:
       - MYSQL_PASSWORD=${SQL_ADMIN_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}
     volumes:
-      - .volumes/.mysql:/var/lib/mysql
+      - ../.volumes/.mysql:/var/lib/mysql
