@@ -6,6 +6,11 @@ services:
       dockerfile: ./Dockerfile
     container_name: app
     tty: true
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DB}
+      - MYSQL_USER=${SQL_ADMIN_USERNAME}
+      - MYSQL_PASSWORD=${SQL_ADMIN_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}
     links: 
       - db
       

@@ -183,7 +183,7 @@ def create_tables():
         sql_query = '''CREATE TABLE MovieDB.Users (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Name VARCHAR(20) NOT NULL UNIQUE,
-                    Password VARCHAR (50) NOT NULL UNIQUE,
+                    Password VARCHAR (50) NOT NULL,
                     Email VARCHAR (40) NOT NULL UNIQUE,
                     PRIMARY KEY(id));'''
 

@@ -8,9 +8,9 @@ def connect_to_db():
     ''' This function returns the connector and cursor objects to work with the database'''
 
     MySQL_hostname = 'db'   # The name of the mysql Docker container
-    sql_username = os.getenv("SQL_ADMIN_USERNAME")
-    sql_password = os.getenv("SQL_ADMIN_PASSWORD")
-    sql_database = os.getenv("MYSQL_DB")
+    sql_username = os.getenv("MYSQL_USER")
+    sql_password = os.getenv("MYSQL_PASSWORD")
+    sql_database = os.getenv("MYSQL_DATABASE")
 
     # Connect with the database
     connector = pymysql.connect(host=MySQL_hostname,
