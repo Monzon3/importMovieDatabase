@@ -4,13 +4,19 @@ import pymysql
 
 load_dotenv()
 
-def connect_to_db():
-    ''' This function returns the connector and cursor objects to work with the database'''
+def connect_to_db(mod:str=''):
+    ''' This function returns the connector and cursor objects to work with the database.
+    
+    It is important to grant privileges to the admin user in the MySQL database before importing the database.'''
 
     MySQL_hostname = 'db'   # The name of the mysql Docker container
     sql_username = os.getenv("MYSQL_USER")
     sql_password = os.getenv("MYSQL_PASSWORD")
-    sql_database = os.getenv("MYSQL_DATABASE")
+    
+    if mod == '':
+        sql_database = os.getenv("MYSQL_DATABASE")
+    elif mod == '_test':
+        sql_database = os.getenv("MYSQL_TEST_DATABASE")
 
     # Connect with the database
     connector = pymysql.connect(host=MySQL_hostname,

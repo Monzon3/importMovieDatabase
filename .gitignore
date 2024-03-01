@@ -7,4 +7,9 @@ resources/Peliculas.xlsx
 resources/Peliculas_New.xlsx
 
 # Docker files
-.volumes/
+.volumes/  
+
+#Aux files
+dockerBuild.bat
+dockerDown.bat
+dockerUp.bat

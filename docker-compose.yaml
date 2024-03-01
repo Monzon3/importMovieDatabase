@@ -8,6 +8,7 @@ services:
     tty: true
     environment:
       - MYSQL_DATABASE=${MYSQL_DB}
+      - MYSQL_TEST_DATABASE=${MYSQL_TEST_DB}
       - MYSQL_USER=${SQL_ADMIN_USERNAME}
       - MYSQL_PASSWORD=${SQL_ADMIN_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}

@@ -4,56 +4,62 @@ The new empty database is created as 00_EmptyDatabase.db.'''
 import common.dbConnector as dbConnector
 import pymysql as sql
 
-def create_tables():
+def create_tables(mod:str=''):
+    ''' 
+    - 'mod' variable is a modifier to create the same tables in the _test database. 
+    If it's empty, it does not modify the original sql queries and all the tables
+    are created in the MovieDB database.    
+    '''
+
     # Connect to MySQL 'MovieDB'
-    [conn, db] = dbConnector.connect_to_db()
+    [conn, db] = dbConnector.connect_to_db(mod)
 
     # Generate tables
     # Storage (this approach is called database normalization in sql)
     try:
-        sql_query = '''CREATE TABLE MovieDB.Storage (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Storage (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Device VARCHAR(20) NOT NULL UNIQUE,
                     PRIMARY KEY(id));'''
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Storage" table has been created correctly')
+        print(f'- "Storage" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Storage"', error)
+        print(f'Error while creating the table "Storage" in MovieDB{mod}', error)
 
     # Qualities
     try:
-        sql_query = '''CREATE TABLE MovieDB.Qualities (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Qualities (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Quality VARCHAR(10) NOT NULL UNIQUE,
                     PRIMARY KEY(id));'''
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Qualities" table has been created correctly')
+        print(f'- "Qualities" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Qualities"', error)
+        print(f'Error while creating the table "Qualities" in MovieDB{mod}', error)
 
     # Countries
     try:
-        sql_query = '''CREATE TABLE MovieDB.Countries (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Countries (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Country VARCHAR(25) NOT NULL UNIQUE,
                     PRIMARY KEY(id));'''
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Countries" table has been created correctly')
+        print(f'- "Countries" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Countries"', error)
+        print(f'Error while creating the table "Countries" in MovieDB{mod}', error)
 
     # Main table
     try:
-        sql_query = '''CREATE TABLE MovieDB.Main (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Main (
                     id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Title VARCHAR(100) NOT NULL,
                     OriginalTitle VARCHAR(100) NOT NULL,
@@ -76,14 +82,14 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Main" table has been created correctly')
+        print(f'- "Main" table has been created correctly in MovieDB{mod}')
 
     except sql.Error as error:
-        print('Error while creating the table "Main"', error)
+        print(f'Error while creating the table "Main" in MovieDB{mod}', error)
 
     # Languages
     try:
-        sql_query = '''CREATE TABLE MovieDB.Languages (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Languages (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     LangShort VARCHAR(6) NOT NULL UNIQUE,
                     LangComplete VARCHAR(15) NOT NULL UNIQUE,
@@ -91,14 +97,14 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Languages" table has been created correctly')
+        print(f'- "Languages" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Languages"', error)
+        print(f'Error while creating the table "Languages" in MovieDB{mod}', error)
 
     # Audio_in_movie
     try:
-        sql_query = '''CREATE TABLE MovieDB.Audio_in_movie (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Audio_in_movie (
                     filmID SMALLINT UNSIGNED NOT NULL,
                     languageID TINYINT UNSIGNED NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
@@ -108,14 +114,14 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Audio_in_movie" table has been created correctly')
+        print(f'- "Audio_in_movie" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Audio_in_movie"', error)
+        print(f'Error while creating the table "Audio_in_movie" in MovieDB{mod}', error)
 
     # Subs_in_movie
     try:
-        sql_query = '''CREATE TABLE MovieDB.Subs_in_movie (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Subs_in_movie (
                     filmID SMALLINT UNSIGNED NOT NULL,
                     languageID TINYINT UNSIGNED NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
@@ -125,28 +131,28 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Subs_in_movie" table has been created correctly')
+        print(f'- "Subs_in_movie" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Subs_in_movie"', error)
+        print(f'Error while creating the table "Subs_in_movie" in MovieDB{mod}', error)
 
     # Genre - Categories
     try:
-        sql_query = '''CREATE TABLE MovieDB.Genre_Categories (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Genre_Categories (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Category VARCHAR(15) NOT NULL UNIQUE,
                     PRIMARY KEY(id));'''
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Genre_Categories" table has been created correctly')
+        print(f'- "Genre_Categories" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Genre_Categories"', error)
+        print(f'Error while creating the table "Genre_Categories" in MovieDB{mod}', error)
 
     # Genres
     try:
-        sql_query = '''CREATE TABLE MovieDB.Genres (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Genres (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     CategoryID TINYINT UNSIGNED NOT NULL,
                     Name VARCHAR(40) NOT NULL UNIQUE,
@@ -156,14 +162,14 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Genres" table has been created correctly')
+        print(f'- "Genres" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Genres"', error)
+        print(f'Error while creating the table "Genres" in MovieDB{mod}', error)
 
     # Genre_in_movie
     try:
-        sql_query = '''CREATE TABLE MovieDB.Genre_in_movie (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Genre_in_movie (
                     filmID SMALLINT UNSIGNED NOT NULL,
                     genreID TINYINT UNSIGNED NOT NULL,
                     FOREIGN KEY (filmID) REFERENCES Main(id)
@@ -173,14 +179,14 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Genre_in_movie" table has been created correctly')
+        print(f'- "Genre_in_movie" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Genre_in_movie"', error)
+        print(f'Error while creating the table "Genre_in_movie" in MovieDB{mod}', error)
 
     # Users
     try:
-        sql_query = '''CREATE TABLE MovieDB.Users (
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Users (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Name VARCHAR(20) NOT NULL UNIQUE,
                     Password VARCHAR (50) NOT NULL,
@@ -189,11 +195,11 @@ def create_tables():
 
         db.execute(sql_query)
         conn.commit()
-        print('- "Genre_Categories" table has been created correctly')
+        print(f'- "Genre_Categories" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print('Error while creating the table "Genre_Categories"', error)
+        print(f'Error while creating the table "Genre_Categories" in MovieDB{mod}', error)
 
     db.close()
     conn.close()
-    print("\nDisconnected from database 'MovieDB'\n")
+    print(f"\nDisconnected from database 'MovieDB{mod}'\n")
