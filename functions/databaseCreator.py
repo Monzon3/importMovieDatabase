@@ -1,6 +1,9 @@
 ''' The idea is to create the database using this file and leave it as a future reference
-to look up which tables are in it, type of data within them, etc. 
-The new empty database is created as 00_EmptyDatabase.db.'''
+to look up which tables are in it, type of data within them, etc.
+
+To create all these tables, the databases MovieDB and MovieDB_test should exist and
+since they are accessing the database with the user 'admin', this user should exist
+and have the privileges for all actions.'''
 import common.dbConnector as dbConnector
 import pymysql as sql
 
@@ -199,6 +202,36 @@ def create_tables(mod:str=''):
     
     except sql.Error as error:
         print(f'Error while creating the table "Genre_Categories" in MovieDB{mod}', error)
+
+    db.close()
+    conn.close()
+    print(f"\nDisconnected from database 'MovieDB{mod}'\n")
+
+def delete_tables(mod:str=''):
+    ''' 
+    - 'mod' variable is a modifier to delete the same tables in the _test database. 
+    If it's empty, it does not modify the original sql queries and all the tables
+    are deleted from the MovieDB database. 
+
+    This function will be used during the development process to save time but will be deleted
+    once the database is in production for safety reasons.   
+    '''
+    # Connect to MySQL 'MovieDB'
+    [conn, db] = dbConnector.connect_to_db(mod)
+
+    print(f"Deleting all tables from MovieDB{mod}")
+
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Audio_in_movie;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Subs_in_movie;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Genre_in_movie;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Genres;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Genre_Categories;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Main;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Countries;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Languages;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Qualities;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Storage;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Users;")
 
     db.close()
     conn.close()
