@@ -219,7 +219,7 @@ def delete_tables(mod:str=''):
     # Connect to MySQL 'MovieDB'
     [conn, db] = dbConnector.connect_to_db(mod)
 
-    print(f"Deleting all tables from MovieDB{mod}")
+    print(f"1. Deleting all tables from 'MovieDB{mod}'")
 
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Audio_in_movie;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Subs_in_movie;")
@@ -232,6 +232,8 @@ def delete_tables(mod:str=''):
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Qualities;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Storage;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Users;")
+
+    print(f"If no errors have been shown, all tables have been deleted correctly from 'MovieDB{mod}'")
 
     db.close()
     conn.close()
