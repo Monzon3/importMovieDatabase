@@ -194,6 +194,9 @@ def create_tables(mod:str=''):
                     Name VARCHAR(20) NOT NULL UNIQUE,
                     Password VARCHAR (50) NOT NULL,
                     Email VARCHAR (40) NOT NULL UNIQUE,
+                    user_rank ENUM ('user', 'admin') DEFAULT ('user'),
+                    Disabled BOOL DEFAULT (FALSE),
+                    Deleted BOOL DEFAULT (FALSE),
                     PRIMARY KEY(id));'''
 
         db.execute(sql_query)
@@ -201,7 +204,7 @@ def create_tables(mod:str=''):
         print(f'- "Genre_Categories" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
-        print(f'Error while creating the table "Genre_Categories" in MovieDB{mod}', error)
+        print(f'Error while creating the table "Users" in MovieDB{mod}', error)
 
     db.close()
     conn.close()
