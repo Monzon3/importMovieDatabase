@@ -2,7 +2,6 @@
 __pycache__/
 
 # App files
-.env
 resources/Peliculas.xlsx
 resources/Peliculas_New.xlsx
 
@@ -10,6 +9,6 @@ resources/Peliculas_New.xlsx
 .volumes/  
 
 #Aux files
-dockerBuild.bat
-dockerDown.bat
-dockerUp.bat
+0_dockerBuild.bat
+1_dockerUp.bat
+2_dockerDown.bat
