@@ -65,7 +65,9 @@ def create_tables(mod:str=''):
         sql_query = f'''CREATE TABLE MovieDB{mod}.Main (
                     id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Title VARCHAR(100) NOT NULL,
+                    INDEX idxTitle (Title),
                     OriginalTitle VARCHAR(100) NOT NULL,
+                    INDEX idxOrigTitle (OriginalTitle),
                     StorageID TINYINT UNSIGNED,
                     QualityID TINYINT UNSIGNED, 
                     Year SMALLINT UNSIGNED NOT NULL CHECK(Year>1880 AND Year<2100),
@@ -194,14 +196,14 @@ def create_tables(mod:str=''):
                     Name VARCHAR(20) NOT NULL UNIQUE,
                     Password VARCHAR (50) NOT NULL,
                     Email VARCHAR (40) NOT NULL UNIQUE,
-                    user_rank ENUM ('user', 'admin') DEFAULT ('user'),
+                    User_rank ENUM ('user', 'admin') DEFAULT ('user'),
                     Disabled BOOL DEFAULT (FALSE),
                     Deleted BOOL DEFAULT (FALSE),
                     PRIMARY KEY(id));'''
 
         db.execute(sql_query)
         conn.commit()
-        print(f'- "Genre_Categories" table has been created correctly in MovieDB{mod}')
+        print(f'- "Users" table has been created correctly in MovieDB{mod}')
     
     except sql.Error as error:
         print(f'Error while creating the table "Users" in MovieDB{mod}', error)
