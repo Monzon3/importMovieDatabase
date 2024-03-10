@@ -72,10 +72,10 @@ def create_tables(mod:str=''):
                     QualityID TINYINT UNSIGNED NOT NULL, 
                     Year SMALLINT UNSIGNED NOT NULL CHECK(Year>1880 AND Year<2100),
                     CountryID TINYINT UNSIGNED NOT NULL,
-                    Length SMALLINT UNSIGNED,
+                    Length SMALLINT UNSIGNED DEFAULT (0),
                     Director VARCHAR(200) NOT NULL,
                     Screenplay VARCHAR(300),
-                    Score TINYINT UNSIGNED Check(Score<=10),
+                    Score TINYINT UNSIGNED Check(Score<=10) DEFAULT (0),
                     Image VARCHAR(120),
                     PRIMARY KEY(id),
                     FOREIGN KEY (StorageID) REFERENCES Storage(id)
