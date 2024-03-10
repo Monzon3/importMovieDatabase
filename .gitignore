@@ -4,6 +4,7 @@ __pycache__/
 # App files
 resources/Peliculas.xlsx
 resources/Peliculas_New.xlsx
+myUser.sql
 
 # Docker files
 .volumes/  

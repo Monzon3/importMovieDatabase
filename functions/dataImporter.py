@@ -158,7 +158,7 @@ def obtainID(db, table, field, value):
 
 
 def import_data():
-    print("- Importing registers into 'Main' table...")
+    print("- 3. Importing registers into 'Main' table...")
     # Load the configuration.ini file
     config = ConfigParser()
     config.read('./config/configuration.ini')
