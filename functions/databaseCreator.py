@@ -60,6 +60,23 @@ def create_tables(mod:str=''):
     except sql.Error as error:
         print(f'Error while creating the table "Countries" in MovieDB{mod}', error)
 
+    # Directors
+    try:
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Directors (
+                    id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                    Name VARCHAR(200) NOT NULL UNIQUE,
+                    CountryID TINYINT UNSIGNED,
+                    PRIMARY KEY(id),
+                    FOREIGN KEY (CountryID) REFERENCES Countries(id)
+                    ON DELETE SET NULL ON UPDATE CASCADE);'''
+
+        db.execute(sql_query)
+        conn.commit()
+        print(f'- "Directors" table has been created correctly in MovieDB{mod}')
+    
+    except sql.Error as error:
+        print(f'Error while creating the table "Directors" in MovieDB{mod}', error)
+
     # Main table
     try:
         sql_query = f'''CREATE TABLE MovieDB{mod}.Main (
@@ -68,12 +85,12 @@ def create_tables(mod:str=''):
                     INDEX idxTitle (Title),
                     OriginalTitle VARCHAR(100) NOT NULL,
                     INDEX idxOrigTitle (OriginalTitle),
-                    StorageID TINYINT UNSIGNED NOT NULL,
-                    QualityID TINYINT UNSIGNED NOT NULL, 
+                    StorageID TINYINT UNSIGNED,
+                    QualityID TINYINT UNSIGNED, 
                     Year SMALLINT UNSIGNED NOT NULL CHECK(Year>1880 AND Year<2100),
-                    CountryID TINYINT UNSIGNED NOT NULL,
+                    CountryID TINYINT UNSIGNED,
                     Length SMALLINT UNSIGNED DEFAULT (0),
-                    Director VARCHAR(200) NOT NULL,
+                    Director VARCHAR(200),
                     Screenplay VARCHAR(300),
                     Score TINYINT UNSIGNED Check(Score<=10) DEFAULT (0),
                     Image VARCHAR(120),
@@ -232,6 +249,7 @@ def delete_tables(mod:str=''):
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Genres;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Genre_Categories;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Main;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Directors;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Countries;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Languages;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Qualities;")

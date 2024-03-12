@@ -3,7 +3,8 @@ into a file named 'Peliculas.xlsx' and store it in /resources. It is very import
 table again before running the script, to avoid having missing values in the Id column.
 
 Then execute this script to obtain all unique values 
-from the original fields 'Disco', 'Calidad', 'Idioma' and 'Pais' and import their values into the new database.
+from the original fields 'Disco', 'Calidad', 'Idioma', 'Pais' and 'Director' 
+and import their values into the new database.
 
 Finally, the Genres tables are also populated with the values from the .json file 'ListGenres'.'''
 
@@ -15,7 +16,8 @@ import pymysql as sql
 
 def get_unique_values(col, dataFrame):
     ''' This function will obtain the unique values from a specific column in the original database
-    to populate the new 'Countries', 'Languages', 'Qualities and 'Storage' tables in the new database
+    to populate the new 'Countries', 'Languages', 'Qualities', 'Storage' and 'Directors'
+    tables in the new database.
 
     - col: Name of the column in the original Access database to work with
     - dataFrame: Full original Access database, in a Pandas DataFrame structure'''
@@ -23,7 +25,18 @@ def get_unique_values(col, dataFrame):
     # Obtain unique values from 'col' column to insert into the new 'col' table
     series = dataFrame[-dataFrame.duplicated(col)][col]
 
-   # 'IdiomaAudio' (Language) values are processed differently 
+    if col == 'Director':
+        for i in range(series.size):
+            if series.iloc[i].find(',') != -1:
+                # Isolate directors from multiple-entries and append to aux series
+                aux_series = pd.concat([aux_series, pd.Series(series.iloc[i].split(', '))])  
+                 
+        series = pd.concat([series, aux_series])        # Append aux to original series
+        series = series[-series.str.find(',')>0]        # Delete multiple-entries, which are now duplicated
+        # Delete again duplicated values (this is needed as now there will be duplicated entries again)
+        series = series[-series.duplicated()]  
+
+    # 'IdiomaAudio' (Language) values are processed differently 
     if col == 'IdiomaAudio': 
         # This values will be updated for the future version of the database
         series = series.apply(lambda x: x.replace('Maya', 'May'))
@@ -35,14 +48,15 @@ def get_unique_values(col, dataFrame):
         # Delete double-values and finish off
         series = series[-series.str.find('-')>0]
 
-    series = series.sort_values()
+    series = series.sort_values() 
 
     return series
 
 
 def update_database(conn, db, series, table, col, mod:str=''):
-    ''' This function will populate the tables 'Countries', 'Languages', 'Qualities' and 'Storage' 
-    in the new database with the unique values obtained from the original database
+    ''' This function will populate the tables 'Countries', 'Languages', 'Qualities',
+    'Storage' and 'Directors' in the new database with the unique values 
+    obtained from the original database
     
     - conn: MySQL connector
     - db: MySQL cursor
@@ -60,6 +74,7 @@ def update_database(conn, db, series, table, col, mod:str=''):
             lang_list = json.load(f)
 
     for val in series:
+        val = val.replace("'", "''")        # For directors with ' in their name
         try:
             if table == 'Languages':
                 sql_query = f'''INSERT INTO MovieDB{mod}.{table} ({col}, LangComplete)
@@ -135,6 +150,7 @@ def import_database():
     quality = get_unique_values('Calidad', movie_database)
     lang = get_unique_values('IdiomaAudio', movie_database)
     country = get_unique_values('Pais', movie_database)
+    director = get_unique_values('Director', movie_database)
 
     # Import the unique values into the new database and the test database
     update_database(conn, db, disc, 'Storage', 'Device')
@@ -145,11 +161,13 @@ def import_database():
     update_database(conn_test, db_test, lang, 'Languages', 'LangShort', '_test')
     update_database(conn, db, country, 'Countries', 'Country')
     update_database(conn_test, db_test, country, 'Countries', 'Country', '_test')
+    update_database(conn, db, director, 'Directors', 'Name')
+    update_database(conn_test, db_test, director, 'Directors', 'Name', '_test')
     update_genres(conn, db, config.get('Aux_files', 'genres_list'))
     update_genres(conn_test, db_test, config.get('Aux_files', 'genres_list'), '_test')
 
     str1 = 'If no errors have been shown, all values have been correctly imported'
-    str2 = "into the tables 'Qualities', 'Storage', 'Languages', 'Countries', 'Genres' and 'Genre_Categories'"
+    str2 = "into the tables 'Qualities', 'Storage', 'Languages', 'Countries', 'Directors', 'Genres' and 'Genre_Categories'"
     str3 = "within MovieDB and MovieDB_test databases"
     print(' '.join([str1, str2, str3]))
 
