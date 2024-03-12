@@ -64,7 +64,7 @@ def update_database(conn, db, series, table, col, mod:str=''):
     - series: Series of values to insert into the new database's tables
     - table: Name of the table in which to insert these values mentioned above 
     - col: Name of the column, within the table, in which to insert values.
-    - mod: Empty to INSERT INTO MovieDB and '_test' to INSERT INTO MovieDB_test.'''
+    - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
     # Full languages' names need to be added so the NOT NULL constraint is met
     if table == 'Languages':
@@ -97,7 +97,7 @@ def update_genres(conn, db, list_genres, mod:str=''):
     - conn: MySQL connector
     - db: MySQL cursor
     - list_genres: Path from Configuration.ini to the ListGenres.json
-    - mod: Empty to INSERT INTO MovieDB and '_test' to INSERT INTO MovieDB_test.'''
+    - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
     with open(list_genres, encoding = 'utf-8') as f:
         genres = json.load(f)

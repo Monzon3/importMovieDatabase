@@ -10,6 +10,7 @@ myUser.sql
 .volumes/  
 
 #Aux files
+00_dockerBuildFull.bat
 0_dockerBuild.bat
 1_dockerUp.bat
 2_dockerDown.bat
