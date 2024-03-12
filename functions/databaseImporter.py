@@ -40,8 +40,8 @@ def get_unique_values(col, dataFrame):
     # 'IdiomaAudio' (Language) values are processed differently 
     if col == 'IdiomaAudio': 
         # This values will be updated for the future version of the database
-        series = series.apply(lambda x: x.replace('Maya', 'May'))
-        series = series.apply(lambda x: x.replace('Var', 'Varios'))
+        series = series.str.replace('Maya', 'May')
+        series = series.str.replace('Var', 'Varios')
 
         # Latin is added (there is one movie with subtitles in Latin)
         series = pd.concat([series, pd.Series(['Lat'])])

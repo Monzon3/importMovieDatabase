@@ -90,7 +90,6 @@ def create_tables(mod:str=''):
                     Year SMALLINT UNSIGNED NOT NULL CHECK(Year>1880 AND Year<2100),
                     CountryID TINYINT UNSIGNED,
                     Length SMALLINT UNSIGNED DEFAULT (0),
-                    Director VARCHAR(200),
                     Screenplay VARCHAR(300),
                     Score TINYINT UNSIGNED Check(Score<=10) DEFAULT (0),
                     Image VARCHAR(120),
@@ -157,6 +156,23 @@ def create_tables(mod:str=''):
     
     except sql.Error as error:
         print(f'Error while creating the table "Subs_in_movie" in MovieDB{mod}', error)
+
+    # Director_in_movie
+    try:
+        sql_query = f'''CREATE TABLE MovieDB{mod}.Director_in_movie (
+                    filmID SMALLINT UNSIGNED NOT NULL,
+                    directorID SMALLINT UNSIGNED NOT NULL,
+                    FOREIGN KEY (filmID) REFERENCES Main(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE,
+                    FOREIGN KEY (directorID) REFERENCES Directors(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE);'''
+
+        db.execute(sql_query)
+        conn.commit()
+        print(f'- "Director_in_movie" table has been created correctly in MovieDB{mod}')
+    
+    except sql.Error as error:
+        print(f'Error while creating the table "Director_in_movie" in MovieDB{mod}', error)
 
     # Genre - Categories
     try:
@@ -245,6 +261,7 @@ def delete_tables(mod:str=''):
 
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Audio_in_movie;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Subs_in_movie;")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Director_in_movie;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Genre_in_movie;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Genres;")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Genre_Categories;")
