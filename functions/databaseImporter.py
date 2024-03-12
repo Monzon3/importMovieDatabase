@@ -26,6 +26,7 @@ def get_unique_values(col, dataFrame):
     series = dataFrame[-dataFrame.duplicated(col)][col]
 
     if col == 'Director':
+        aux_series = pd.Series()
         for i in range(series.size):
             if series.iloc[i].find(',') != -1:
                 # Isolate directors from multiple-entries and append to aux series
@@ -78,9 +79,9 @@ def update_database(conn, db, series, table, col, mod:str=''):
         try:
             if table == 'Languages':
                 sql_query = f'''INSERT INTO MovieDB{mod}.{table} ({col}, LangComplete)
-                            VALUES (\'{val}\', \'{lang_list[val]}\')'''
+                            VALUES (\'{val}\', \'{lang_list[val]}\');'''
             else:
-                sql_query = f'INSERT INTO MovieDB{mod}.{table} ({col}) VALUES (\'{val}\')'
+                sql_query = f'INSERT INTO MovieDB{mod}.{table} ({col}) VALUES (\'{val}\');'
             
             db.execute(sql_query)
             conn.commit()
@@ -106,7 +107,7 @@ def update_genres(conn, db, list_genres, mod:str=''):
         if genres[i]['Category'] not in list: 
             list.append(genres[i]['Category'])
             sql_query = f'''INSERT INTO MovieDB{mod}.Genre_Categories (Category) VALUES 
-                            (\'{genres[i]['Category']}\')'''
+                            (\'{genres[i]['Category']}\');'''
             try:
                 db.execute(sql_query)
                 conn.commit()
@@ -116,13 +117,13 @@ def update_genres(conn, db, list_genres, mod:str=''):
 
         try:
             sql_query = f'''SELECT id FROM MovieDB{mod}.Genre_Categories 
-                            WHERE Category = \'{genres[i]['Category']}\'''' 
+                            WHERE Category = \'{genres[i]['Category']}\';''' 
 
             db.execute(sql_query)
             res = db.fetchone()
 
             sql_query = f'''INSERT INTO MovieDB{mod}.Genres (CategoryID, Name) VALUES 
-                            ({res[0]}, \'{genres[i]['Name']}\')''' 
+                            ({res[0]}, \'{genres[i]['Name']}\');''' 
 
             db.execute(sql_query)
             conn.commit() 
