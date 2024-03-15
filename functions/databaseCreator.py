@@ -94,7 +94,7 @@ def create_tables(mod:str=''):
                     Score TINYINT UNSIGNED Check(Score<=10 AND Score>=0) DEFAULT (0),
                     Image VARCHAR(120),
                     PRIMARY KEY(id),
-                    FOREIGN KEY (StorageID) REFERENCES Storage(id)
+                    FOREIGN KEY (DeviceID) REFERENCES Storage(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,
                     FOREIGN KEY (QualityID) REFERENCES Qualities(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,

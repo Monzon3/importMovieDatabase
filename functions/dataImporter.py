@@ -33,7 +33,7 @@ def import_df_to_db(conn, db, dataFrame, mod=''):
         score = dataFrame.loc[i, 'Puntuacion']
         script = dataFrame.loc[i, 'Guion']
         img = dataFrame.loc[i, 'Imagen']
-        sql_query = f"""INSERT INTO MovieDB{mod}.Main (Title, OriginalTitle, StorageID, QualityID, Year,
+        sql_query = f"""INSERT INTO MovieDB{mod}.Main (Title, OriginalTitle, DeviceID, QualityID, Year,
                     CountryID, Length, Screenplay, Score, Image) 
                     VALUES 
                     ('{tit}', '{origTit}', {disc}, {qt}, {year}, 
