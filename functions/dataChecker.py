@@ -19,16 +19,16 @@ def obtain_directors(db, film_id, mod=''):
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
     # Get all director IDs for the given movie
-    sql_query = f'''SELECT Directors.Name from MovieDB{mod}.Director_in_movie 
+    sql_query = f"""SELECT Directors.Name from MovieDB{mod}.Director_in_movie 
                   INNER JOIN MovieDB{mod}.Directors ON Director_in_movie.directorID = Directors.id
-                  WHERE filmID = "{film_id}"
-                  ORDER BY Directors.Name;'''
+                  WHERE filmID = {film_id}
+                  ORDER BY Directors.Name;"""
     db.execute(sql_query)
-    record = db.fetchall()
+    res = db.fetchall()
 
     directors = []
-    if len(record) != 0:
-        for i in record:
+    if len(res) != 0:
+        for i in res:
             directors.append(i[0])
 
     if len(directors) == 1:
@@ -49,18 +49,18 @@ def obtain_genres(db, film_id, mod=''):
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
     # Get all genre IDs for the given movie
-    sql_query = f"SELECT genreID from MovieDB{mod}.Genre_in_movie WHERE filmID = '{film_id}'"
+    sql_query = f"SELECT genreID from MovieDB{mod}.Genre_in_movie WHERE filmID = {film_id};"
     db.execute(sql_query)
-    record = db.fetchall()
+    res = db.fetchall()
 
     genres = []
-    if len(record) != 0:
-        for i in record:
-            sql_query = f'''SELECT Genre_Categories.Category, Genres.Name 
+    if len(res) != 0:
+        for i in res:
+            sql_query = f"""SELECT Genre_Categories.Category, Genres.Name 
                         FROM MovieDB{mod}.Genres 
                         INNER JOIN MovieDB{mod}.Genre_Categories 
-                        ON Genres.CategoryID=Genre_Categories.id
-                        WHERE Genres.id={i[0]}'''
+                        ON Genres.CategoryID = Genre_Categories.id
+                        WHERE Genres.id={i[0]};"""
             db.execute(sql_query)
             genres_raw = db.fetchall()
             # Get values out of the Tuple and into str to modify them
@@ -119,14 +119,14 @@ def obtain_languages(db, film_id, mod=''):
     audios = "-"
     subs = "-"
     for category in ["Audio", "Subs"]:
-        sql_query = f"SELECT languageID from MovieDB{mod}.{category}_in_movie WHERE filmID = '{film_id}'"
+        sql_query = f"SELECT languageID from MovieDB{mod}.{category}_in_movie WHERE filmID = {film_id}"
         db.execute(sql_query)
-        record = db.fetchall()
+        res = db.fetchall()
 
         lang = []
-        if len(record) != 0:
-            for i in record:
-                sql_query = f"SELECT LangShort FROM MovieDB{mod}.Languages WHERE id = '{i[0]}'"
+        if len(res) != 0:
+            for i in res:
+                sql_query = f"SELECT LangShort FROM MovieDB{mod}.Languages WHERE id = {i[0]};"
                 db.execute(sql_query)
                 res = db.fetchone()[0]
                 # The following is done to match the original values in the database 
@@ -161,15 +161,14 @@ def obtain_val(db, table, field, id, mod):
     - id: ID to look for in the database and obtain its original text value
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
-    sql_query = f"SELECT {field} FROM MovieDB{mod}.{table} WHERE id = '{id}'"
+    sql_query = f"SELECT {field} FROM MovieDB{mod}.{table} WHERE id = {id};"
     db.execute(sql_query)
-    val = db.fetchone()
 
-    return val[0]
+    return db.fetchone()[0]
 
 
 def check_data(mod=''):
-    print('- 4. Checking the values from MySQL are exactly the same as those in the Original Excel database...')
+    print("5. Checking the values from MySQL are exactly the same as those in the Original Excel database...")
     # Load the configuration.ini file
     config = ConfigParser()
     config.read('./config/configuration.ini')
@@ -183,7 +182,7 @@ def check_data(mod=''):
 
     # Obtain values from database for new 'Pais', 'Disco' and 'Calidad' ID values
     # and update dataframe values
-    new_database = pd.read_sql_query(f'SELECT * FROM MovieDB{mod}.Main', conn) 
+    new_database = pd.read_sql_query(f"SELECT * FROM MovieDB{mod}.Main", conn) 
 
     for i in range(new_database.shape[0]):
         new_database.loc[i, 'CountryID'] = obtain_val(db, 
@@ -203,7 +202,7 @@ def check_data(mod=''):
                                                     mod=mod)
 
     # A different function is used to get the Languages and Genres for each film
-    # First of all add 'IdiomaAudio', 'IdiomaSubtitulos' and 'Genero' columns 
+    # First of all add 'IdiomaAudio', 'IdiomaSubtitulos', 'Director' and 'Genero' columns 
     new_database.insert(5, 'IdiomaAudio', '')
     new_database.insert(6, 'IdiomaSubtitulos', '')
     new_database.insert(10, 'Director', '')
@@ -232,16 +231,16 @@ def check_data(mod=''):
     diff = df[df['_merge']!='both']
     
     if diff.shape[0]>0:
-        print('Differences have been found in the following movies:')
+        print("Differences have been found in the following movies:")
         for i in range(diff.shape[0]):
-            print('Original:')
+            print("Original:")
             print(original_database.iloc[(diff.iloc[i, 0] - 1), : ])
-            print('New:')
+            print("New:")
             print(new_database.iloc[(diff.iloc[i, 0] - 1), : ])
     else:
-        print('Both databases are exactly the same!')
+        print("Both databases are exactly the same!")
 
     db.close()
     conn.close()
 
-    print(f"\nDisconnected from database 'MovieDB{mod}'\n")
+    print(f"\n-- Disconnected from database 'MovieDB{mod}' --\n")

@@ -1,12 +1,13 @@
-''' After the new database and its tables have been created, export values from the original Access database
-into a file named 'Peliculas.xlsx' and store it in /resources. It is very important to re-index the whole Excel
-table again before running the script, to avoid having missing values in the Id column.
+''' After the new database and its tables have been created, the import_database function will obtain
+all unique values from the original fields 'Disco', 'Calidad, 'IdiomaAudio', 'País' and 'Director' to
+populate the newly normalized tables. 
 
-Then execute this script to obtain all unique values 
-from the original fields 'Disco', 'Calidad', 'Idioma', 'Pais' and 'Director' 
-and import their values into the new database.
+Finally, the new Genres tables are also populated with the values from the .json file 'ListGenres'.
 
-Finally, the Genres tables are also populated with the values from the .json file 'ListGenres'.'''
+In order to import everything properly, the exported entries from the original Access database
+should be into a file named 'Peliculas.xlsx' and stored in /resources.
+It is very important to re-index the whole Excel
+table again before running the script, to avoid having missing values in the Id column.'''
 
 from configparser import ConfigParser
 import common.dbConnector as dbConnector
@@ -25,15 +26,16 @@ def get_unique_values(col, dataFrame):
     # Obtain unique values from 'col' column to insert into the new 'col' table
     series = dataFrame[-dataFrame.duplicated(col)][col]
 
+    # Some of the 'Director' registers are multiple entries in the original database
     if col == 'Director':
         aux_series = pd.Series()
         for i in range(series.size):
-            if series.iloc[i].find(',') != -1:
-                # Isolate directors from multiple-entries and append to aux series
+            if series.iloc[i].find(',') != -1:  # Isolate directors from multiple-entries and append to aux series
                 aux_series = pd.concat([aux_series, pd.Series(series.iloc[i].split(', '))])  
                  
         series = pd.concat([series, aux_series])        # Append aux to original series
         series = series[-series.str.find(',')>0]        # Delete multiple-entries, which are now duplicated
+        
         # Delete again duplicated values (this is needed as now there will be duplicated entries again)
         series = series[-series.duplicated()]  
 
@@ -47,11 +49,9 @@ def get_unique_values(col, dataFrame):
         series = pd.concat([series, pd.Series(['Lat'])])
 
         # Delete double-values and finish off
-        series = series[-series.str.find('-')>0]
+        series = series[-series.str.find('-')>0] 
 
-    series = series.sort_values() 
-
-    return series
+    return series.sort_values()
 
 
 def update_database(conn, db, series, table, col, mod:str=''):
@@ -78,62 +78,55 @@ def update_database(conn, db, series, table, col, mod:str=''):
         val = val.replace("'", "''")        # For directors with ' in their name
         try:
             if table == 'Languages':
-                sql_query = f'''INSERT INTO MovieDB{mod}.{table} ({col}, LangComplete)
-                            VALUES (\'{val}\', \'{lang_list[val]}\');'''
+                sql_query = f"""INSERT INTO MovieDB{mod}.{table} ({col}, LangComplete)
+                            VALUES ('{val}', '{lang_list[val]}');"""
             else:
-                sql_query = f'INSERT INTO MovieDB{mod}.{table} ({col}) VALUES (\'{val}\');'
+                sql_query = f"INSERT INTO MovieDB{mod}.{table} ({col}) VALUES ('{val}');"
             
             db.execute(sql_query)
             conn.commit()
         
         except sql.Error as error:
-            print(f'Error while updating the table {table} using:\n {sql_query}: ', error)
+            print(f"Error while updating the table {table} using:\n {sql_query}: ", error)
 
 
-def update_genres(conn, db, list_genres, mod:str=''):
+def update_genres(conn, db, series, mod:str=''):
     ''' This function will populate the tables 'Genres' and 'Genres_Categories' 
     from the database using the .json file 'ListGenres', where all options should be included.
     
     - conn: MySQL connector
     - db: MySQL cursor
-    - list_genres: Path from Configuration.ini to the ListGenres.json
+    - series: Series of values to insert into the new database's tables
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
-    with open(list_genres, encoding = 'utf-8') as f:
-        genres = json.load(f)
-
     list = []
-    for i in genres.keys():
-        if genres[i]['Category'] not in list: 
-            list.append(genres[i]['Category'])
-            sql_query = f'''INSERT INTO MovieDB{mod}.Genre_Categories (Category) VALUES 
-                            (\'{genres[i]['Category']}\');'''
+    for i in series.keys():
+        if series[i]['Category'] not in list: 
+            list.append(series[i]['Category'])
+            sql_query = f"""INSERT INTO MovieDB{mod}.Genre_Categories (Category) VALUES 
+                            ('{series[i]['Category']}');"""
             try:
                 db.execute(sql_query)
                 conn.commit()
 
             except sql.Error as error:
-                print(f'Error while updating the table \'Genre_Categories\' using: \n {sql_query}: ', error)
+                print(f"Error while updating the table 'Genre_Categories' using: \n {sql_query}: ", error)
 
         try:
-            sql_query = f'''SELECT id FROM MovieDB{mod}.Genre_Categories 
-                            WHERE Category = \'{genres[i]['Category']}\';''' 
-
-            db.execute(sql_query)
-            res = db.fetchone()
-
-            sql_query = f'''INSERT INTO MovieDB{mod}.Genres (CategoryID, Name) VALUES 
-                            ({res[0]}, \'{genres[i]['Name']}\');''' 
+            sql_query = f"""INSERT INTO MovieDB{mod}.Genres (CategoryID, Name) VALUES 
+                            ((SELECT id FROM MovieDB{mod}.Genre_Categories 
+                            WHERE Category = '{series[i]['Category']}'), 
+                            '{series[i]['Name']}');""" 
 
             db.execute(sql_query)
             conn.commit() 
 
         except sql.Error as error:
-            print(f'Error while updating the table \'Genres\' using:\n {sql_query}: ', error)
+            print(f"Error while updating the table 'Genres' using:\n {sql_query}: ", error)
 
 
 def import_database():
-    print('- 2. Importing database structure and secondary tables...')
+    print("3. Populating auxiliary tables with their unique values...")
     # Load the configuration.ini file
     config = ConfigParser()
     config.read('./config/configuration.ini')
@@ -146,36 +139,46 @@ def import_database():
     excel_path = config.get('Aux_files', 'excel_database')
     movie_database = pd.read_excel(excel_path)
 
-    # Get unique values for the following columns to populate the new tables in the database
+    # Get the unique values for the following columns to populate the axuiliary tables in the database
+    # and store them into lists
     disc = get_unique_values('Disco', movie_database)
     quality = get_unique_values('Calidad', movie_database)
     lang = get_unique_values('IdiomaAudio', movie_database)
     country = get_unique_values('Pais', movie_database)
     director = get_unique_values('Director', movie_database)
 
-    # Import the unique values into the new database and the test database
+    # Import the lists into the auxiliary tables of both the new database and the test database
     update_database(conn, db, disc, 'Storage', 'Device')
     update_database(conn_test, db_test, disc, 'Storage', 'Device', '_test')
+
     update_database(conn, db, quality, 'Qualities', 'Quality')
     update_database(conn_test, db_test, quality, 'Qualities', 'Quality', '_test')
+
     update_database(conn, db, lang, 'Languages', 'LangShort')
     update_database(conn_test, db_test, lang, 'Languages', 'LangShort', '_test')
+
     update_database(conn, db, country, 'Countries', 'Country')
     update_database(conn_test, db_test, country, 'Countries', 'Country', '_test')
+
     update_database(conn, db, director, 'Directors', 'Name')
     update_database(conn_test, db_test, director, 'Directors', 'Name', '_test')
-    update_genres(conn, db, config.get('Aux_files', 'genres_list'))
-    update_genres(conn_test, db_test, config.get('Aux_files', 'genres_list'), '_test')
 
-    str1 = 'If no errors have been shown, all values have been correctly imported'
+    list_genres = config.get('Aux_files', 'genres_list')
+    with open(list_genres, encoding = 'utf-8') as f:
+        genres = json.load(f)
+    update_genres(conn, db, genres)
+    update_genres(conn_test, db_test, genres, '_test')
+
+    str1 = "If no errors have been shown, all values have been correctly imported"
     str2 = "into the tables 'Qualities', 'Storage', 'Languages', 'Countries', 'Directors', 'Genres' and 'Genre_Categories'"
     str3 = "within MovieDB and MovieDB_test databases"
-    print(' '.join([str1, str2, str3]))
+    print(" ".join([str1, str2, str3]))
 
     db.close()
     db_test.close()
-    conn.close()
-    print("\nDisconnected from database 'MovieDB'\n")
-    conn_test.close()
-    print("Disconnected from database 'MovieDB_test'\n")
     
+    conn.close()
+    print("\n-- Disconnected from database 'MovieDB' --\n")
+
+    conn_test.close()
+    print("-- Disconnected from database 'MovieDB_test' --\n")

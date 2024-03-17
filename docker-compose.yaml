@@ -4,20 +4,19 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    container_name: app
+    container_name: importer_app
     tty: true
     environment:
       - MYSQL_DATABASE=${MYSQL_DB}
       - MYSQL_TEST_DATABASE=${MYSQL_TEST_DB}
       - MYSQL_USER=${SQL_ADMIN_USERNAME}
       - MYSQL_PASSWORD=${SQL_ADMIN_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}
     links: 
       - db
       
   db:
     restart: always
-    container_name: mysql
+    container_name: movie_database
     image: mysql
     ports: 
       - '3310:3306'

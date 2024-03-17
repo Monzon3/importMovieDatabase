@@ -26,6 +26,6 @@ def connect_to_db(mod:str=''):
                         db=sql_database)
 
     cursor = connector.cursor()
-    print(f'Connected to database \'{sql_database}\' \n')                                       
+    print(f"-- Connected to database '{sql_database}' --\n")                                       
 
     return connector, cursor

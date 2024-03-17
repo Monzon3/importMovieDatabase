@@ -14,7 +14,8 @@ import pymysql as sql
 
 def import_df_to_db(conn, db, dataFrame, mod=''):
     ''' After finding the new ID values for the fields 'Quality', 'Storage' and 'Country'
-    the whole database from the Excel file is imported into the new SQL database.
+    the whole database from the Excel file is imported into the new SQL database. These tables will have
+    ID values instead of strings in the 'Main' table.
     
     - conn: MySQL connector
     - db: MySQL cursor
@@ -22,29 +23,24 @@ def import_df_to_db(conn, db, dataFrame, mod=''):
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
     for i in range(dataFrame.shape[0]):
-        # ' are replaced by '' so SQL is able to process them properly
-        tit = dataFrame.loc[i, 'Titulo']
-        origTit = dataFrame.loc[i, 'TituloOriginal']
-        disc = dataFrame.loc[i, 'Disco']
-        qt = dataFrame.loc[i, 'Calidad']
-        year = dataFrame.loc[i, 'Año']
-        country = dataFrame.loc[i, 'Pais']
-        dur = dataFrame.loc[i, 'Duracion']
-        score = dataFrame.loc[i, 'Puntuacion']
-        script = dataFrame.loc[i, 'Guion']
-        img = dataFrame.loc[i, 'Imagen']
         sql_query = f"""INSERT INTO MovieDB{mod}.Main (Title, OriginalTitle, DeviceID, QualityID, Year,
                     CountryID, Length, Screenplay, Score, Image) 
                     VALUES 
-                    ('{tit}', '{origTit}', {disc}, {qt}, {year}, 
-                    {country}, {dur}, '{script}', {score}, '{img}');"""
+                    ('{dataFrame.loc[i, 'Titulo']}', '{dataFrame.loc[i, 'TituloOriginal']}', 
+                      {dataFrame.loc[i, 'Disco']}, {dataFrame.loc[i, 'Calidad']}, 
+                      {dataFrame.loc[i, 'Año']}, {dataFrame.loc[i, 'Pais']}, 
+                      {dataFrame.loc[i, 'Duracion']}, '{dataFrame.loc[i, 'Guion']}', 
+                      {dataFrame.loc[i, 'Puntuacion']}, '{dataFrame.loc[i, 'Imagen']}');"""
+        # It is important to keep the " and ' in the sql_query as they are, even if it is the 
+        # opposite from the rest of the code, because there are some entries that also have
+        # " inside their text, so that would create errors when inserting into the database
 
         try:
             db.execute(sql_query)
             conn.commit()
         
         except sql.Error as error:
-            print(f'Error during the execution of {sql_query}', error)
+            print(f"Error during the execution of {sql_query}", error)
 
 
 def import_directors(conn, db, film_id, value, mod=''):
@@ -54,7 +50,7 @@ def import_directors(conn, db, film_id, value, mod=''):
     
     - conn: MySQL connector
     - db: MySQL cursor
-    - filmID: Film ID to obtain genres
+    - filmID: Film ID to obtain its directors
     - value: Entry to process and divide, if necessary
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
@@ -75,19 +71,19 @@ def import_directors(conn, db, film_id, value, mod=''):
 
     # Populate Director_in_movie with the obtained values
     for i in id:
-        sql_query = f"INSERT INTO MovieDB{mod}.Director_in_movie (filmID, directorID) VALUES ({film_id}, {i});"
-
         try:
+            sql_query = f"""INSERT INTO MovieDB{mod}.Director_in_movie (filmID, directorID) VALUES 
+                          ({film_id}, {i});"""
             db.execute(sql_query)
             conn.commit()
         
         except sql.Error as error:
-            print(f'Error during the execution of {sql_query}', error)
+            print(f"Error during the execution of {sql_query}", error)
 
 
 def import_genres(conn, db, film_id, value, mod=''):
     ''' This function will read all values from 'Genero' column
-    in the Excel database, split them using the ',' character for the movies
+    in the Excel database, split them using the ',' character, for the movies
     with more than one genre and then populate the table 'Genre_in_movie' with the genres found.
     
     - conn: MySQL connector
@@ -122,20 +118,20 @@ def import_genres(conn, db, film_id, value, mod=''):
             res = db.fetchone()
             
             if res != None:
-                sql_query = f'''INSERT INTO MovieDB{mod}.Genre_in_movie (filmID, genreID) 
-                            VALUES ({film_id}, {res[0]});'''
                 try:
+                    sql_query = f"""INSERT INTO MovieDB{mod}.Genre_in_movie (filmID, genreID) 
+                                    VALUES ({film_id}, {res[0]});"""
                     db.execute(sql_query)
                     conn.commit()
                 
                 except sql.Error as error:
-                    print(f'Error during the execution of {sql_query}', error)
+                    print(f"Error during the execution of {sql_query}", error)
 
 
 def import_languages(conn, db, film_id, category, value, mod=''):
     ''' This function will read all values from 'IdiomaAudio' and 'IdiomSubtitulos' columns
     in the Excel database, split them using the '-' character for the movies
-    with two languages in 'Audio' or 'Subs' columns and then populate the tables 
+    with two languages in 'Audio' or 'Subs' columns, and then populate the tables 
     'Audio_in_movie' and 'Subs_in_movie' with the languages found.
     
     - conn: MySQL connector
@@ -156,8 +152,8 @@ def import_languages(conn, db, film_id, category, value, mod=''):
         value = 'Varios'
 
     # Obtain corresponding LanguageID from the new 'Languages' table for each language in 'value'
-    if value != '-':        # Not empty
-        if value.find('-') != -1:
+    if value != '-':                    # Not empty
+        if value.find('-') != -1:       # Two languages in the entry
             [lang1, lang2] = value.split('-')
             sql_query = f"SELECT id FROM MovieDB{mod}.Languages WHERE LangShort = '{lang1}';"
             db.execute(sql_query)
@@ -167,44 +163,39 @@ def import_languages(conn, db, film_id, category, value, mod=''):
             db.execute(sql_query)
             id.append(db.fetchone()[0])
 
-        elif value.find('-') == -1:
+        elif value.find('-') == -1:     # Single language in the entry
             sql_query = f"SELECT id FROM MovieDB{mod}.Languages WHERE LangShort = '{value}';"
             db.execute(sql_query)
             id.append(db.fetchone()[0])
 
     # Populate Audio_in_movie and Subs_in_movie with the obtained values
     for i in id:
-        if category == 'Audio':
-            sql_query = f'INSERT INTO MovieDB{mod}.Audio_in_movie (filmID, languageID) VALUES ({film_id}, {i});'
-
-        elif category == 'Subs':
-            sql_query = f'INSERT INTO MovieDB{mod}.Subs_in_movie (filmID, languageID) VALUES ({film_id}, {i});'
-
         try:
+            sql_query = f"""INSERT INTO MovieDB{mod}.{category}_in_movie (filmID, languageID) VALUES
+                            ({film_id}, {i});"""
             db.execute(sql_query)
             conn.commit()
         
         except sql.Error as error:
-            print(f'Error during the execution of {sql_query}', error)
+            print(f"Error during the execution of {sql_query}", error)
 
 
 def obtainID(db, table, field, value):
-    ''' Function to obtain the ID of a given 'value' in a given 'table'.
+    ''' Function to obtain the ID of a given string 'value' in a given 'table'.
 
     - db: MySQL cursor
-    - table: Name of the table in which to look into
-    - field: Name of the column, within that 'table', in which to look into
-    - value: Value to look for in the database and obtain its ID.'''
+    - table: Name of the table in which to look into for the 'value'
+    - field: Name of the column, within that 'table', in which to look into for the 'value'
+    - value: String value to look for in the database and obtain its ID.'''
 
     sql_query = f"SELECT id FROM MovieDB.{table} WHERE {field} = '{value}';"
     db.execute(sql_query)
-    id = db.fetchone()
 
-    return id[0]
+    return db.fetchone()[0]
 
 
 def import_data():
-    print("- 3. Importing registers into 'Main' table...")
+    print("4. Importing registers into 'Main' table...")
     # Load the configuration.ini file
     config = ConfigParser()
     config.read('./config/configuration.ini')
@@ -217,8 +208,8 @@ def import_data():
     [conn, db] = dbConnector.connect_to_db()
     [conn_test, db_test] = dbConnector.connect_to_db('_test')
 
-    # Obtain IDs from database for former 'Pais', 'Disco' and 'Calidad' values
-    # and update dataframe values
+    # Obtain IDs from database for former 'Pais', 'Disco' and 'Calidad' string values
+    # and overwrite dataframe values
     for i in range(movie_database.shape[0]):
         movie_database.loc[i, 'Pais'] = obtainID(db, 
                                                 table='Countries', 
@@ -262,17 +253,12 @@ def import_data():
         import_directors(conn_test, db_test, movie_database.loc[i, 'Id'], 
                         movie_database.loc[i, 'Director'], '_test')
 
-    print('- All data imported into the new MovieDB database')
-
-    # Export values to Excel to be able to compare with the original ones to verify the process
-    # See macro inside DataChecker.xlsm to verify that the imported data is the same as the original
-    excel_newPath = config.get('Aux_files', 'excel_newDatabase')
-    movie_database.to_excel(excel_newPath, index = False)
+    print("- All data imported into the new 'MovieDB' and 'MovieDB_test' databases")
 
     db.close()
     conn.close()
-    print("\nDisconnected from database 'MovieDB'\n")
+    print("\n-- Disconnected from database 'MovieDB' --\n")
 
     db_test.close()
     conn_test.close()
-    print("\nDisconnected from database 'MovieDB_test'\n")
+    print("\n-- Disconnected from database 'MovieDB_test' --\n")
