@@ -1,4 +1,5 @@
 {
+	"Abj": "Abjasio",
     "Ale": "Alemán",
     "Ara": "Árabe",
     "Ben": "Bengalí",
@@ -13,6 +14,7 @@
     "Est": "Estonio",
     "Eus": "Euskera",
     "Fra": "Francés",
+	"Geo": "Georgiano",
     "Gri": "Griego",
     "Heb": "Hebreo",
     "Hin": "Hindú",
@@ -40,6 +42,7 @@
     "Ser": "Serbio",
     "Sue": "Sueco",
     "Tai": "Tailandés",
+	"Tur": "Turco",
     "Varios": "Varios",
     "Vie": "Vietnamita",
     "Way": "Wayú"
