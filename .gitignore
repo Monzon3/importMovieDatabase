@@ -3,7 +3,6 @@ __pycache__/
 
 # App files
 resources/Peliculas.xlsx
-myUser.sql
 
 #Aux files
 00_dockerBuildFull.bat
