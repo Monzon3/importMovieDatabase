@@ -56,7 +56,7 @@ def obtain_genres(db, film_id, mod=''):
     genres = []
     if len(res) != 0:
         for i in res:
-            sql_query = f"""SELECT Genre_Categories.Category, Genres.Name 
+            sql_query = f"""SELECT Genre_Categories.Name, Genres.Name 
                         FROM MovieDB{mod}.Genres 
                         INNER JOIN MovieDB{mod}.Genre_Categories 
                         ON Genres.CategoryID = Genre_Categories.id
@@ -152,16 +152,15 @@ def obtain_languages(db, film_id, mod=''):
     return audios, subs
 
 
-def obtain_val(db, table, field, id, mod):
+def obtain_val(db, table, id, mod):
     ''' Function to obtain the value for a given 'id' in a given 'table'.
 
     - db: MySQL cursor
     - table: Name of the table in which to look into
-    - field: Name of the column, within that 'table', in which to look into
     - id: ID to look for in the database and obtain its original text value
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
-    sql_query = f"SELECT {field} FROM MovieDB{mod}.{table} WHERE id = {id};"
+    sql_query = f"SELECT Name FROM MovieDB{mod}.{table} WHERE id = {id};"
     db.execute(sql_query)
 
     return db.fetchone()[0]
@@ -187,17 +186,14 @@ def check_data(mod=''):
     for i in range(new_database.shape[0]):
         new_database.loc[i, 'CountryID'] = obtain_val(db, 
                                                     table='Countries', 
-                                                    field='Country', 
                                                     id=new_database.loc[i, 'CountryID'],
                                                     mod=mod)
-        new_database.loc[i, 'DeviceID'] = obtain_val(db,
+        new_database.loc[i, 'StorageID'] = obtain_val(db,
                                                     table='Storage', 
-                                                    field='Device', 
-                                                    id=new_database.loc[i, 'DeviceID'],
+                                                    id=new_database.loc[i, 'StorageID'],
                                                     mod=mod)
         new_database.loc[i, 'QualityID'] = obtain_val(db,
-                                                    table='Qualities', 
-                                                    field='Quality', 
+                                                    table='Qualities',  
                                                     id=new_database.loc[i, 'QualityID'],
                                                     mod=mod)
 

@@ -7,7 +7,7 @@ and have the privileges for all actions.'''
 import common.dbConnector as dbConnector
 import pymysql as sql
 
-def create_tables(mod:str=''):
+def create_tables(mod:str=""):
     ''' 
     - 'mod' variable is a modifier to create the same tables in the MovieDB_test database. 
     If it's empty, it does not modify the original sql queries and all the tables
@@ -25,7 +25,7 @@ def create_tables(mod:str=''):
     try:
         sql_query = f"""CREATE TABLE MovieDB{mod}.Storage (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                    Device VARCHAR(20) NOT NULL UNIQUE,
+                    Name VARCHAR(20) NOT NULL UNIQUE,
                     PRIMARY KEY(id));"""
 
         db.execute(sql_query)
@@ -39,7 +39,7 @@ def create_tables(mod:str=''):
     try:
         sql_query = f"""CREATE TABLE MovieDB{mod}.Qualities (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                    Quality VARCHAR(10) NOT NULL UNIQUE,
+                    Name VARCHAR(10) NOT NULL UNIQUE,
                     PRIMARY KEY(id));"""
 
         db.execute(sql_query)
@@ -53,7 +53,7 @@ def create_tables(mod:str=''):
     try:
         sql_query = f"""CREATE TABLE MovieDB{mod}.Countries (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                    Country VARCHAR(25) NOT NULL UNIQUE,
+                    Name VARCHAR(25) NOT NULL UNIQUE,
                     PRIMARY KEY(id));"""
 
         db.execute(sql_query)
@@ -67,7 +67,7 @@ def create_tables(mod:str=''):
     try:
         sql_query = f"""CREATE TABLE MovieDB{mod}.Directors (
                     id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                    Name VARCHAR(200) NOT NULL UNIQUE,
+                    Name VARCHAR(45) NOT NULL UNIQUE,
                     CountryID TINYINT UNSIGNED,
                     PRIMARY KEY(id),
                     FOREIGN KEY (CountryID) REFERENCES Countries(id)
@@ -88,7 +88,7 @@ def create_tables(mod:str=''):
                     INDEX idxTitle (Title),
                     OriginalTitle VARCHAR(100) NOT NULL,
                     INDEX idxOrigTitle (OriginalTitle),
-                    DeviceID TINYINT UNSIGNED,
+                    StorageID TINYINT UNSIGNED,
                     QualityID TINYINT UNSIGNED, 
                     Year SMALLINT UNSIGNED NOT NULL CHECK(Year>1880 AND Year<2100),
                     CountryID TINYINT UNSIGNED,
@@ -97,7 +97,7 @@ def create_tables(mod:str=''):
                     Score TINYINT UNSIGNED Check(Score<=10 AND Score>=0) DEFAULT (0),
                     Image VARCHAR(120),
                     PRIMARY KEY(id),
-                    FOREIGN KEY (DeviceID) REFERENCES Storage(id)
+                    FOREIGN KEY (StorageID) REFERENCES Storage(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,
                     FOREIGN KEY (QualityID) REFERENCES Qualities(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,
@@ -181,7 +181,7 @@ def create_tables(mod:str=''):
     try:
         sql_query = f"""CREATE TABLE MovieDB{mod}.Genre_Categories (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                    Category VARCHAR(15) NOT NULL UNIQUE,
+                    Name VARCHAR(15) NOT NULL UNIQUE,
                     PRIMARY KEY(id));"""
 
         db.execute(sql_query)
@@ -248,7 +248,7 @@ def create_tables(mod:str=''):
     conn.close()
     print(f"\n-- Disconnected from database 'MovieDB{mod}' --\n")
 
-def delete_tables(mod:str=''):
+def delete_tables(mod:str=""):
     ''' 
     - 'mod' variable is a modifier to delete the same tables in the MovieDB_test database. 
     If it's empty, it does not modify the original sql queries and all the tables

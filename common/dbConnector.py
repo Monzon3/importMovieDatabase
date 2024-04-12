@@ -4,7 +4,7 @@ import pymysql
 
 load_dotenv()
 
-def connect_to_db(mod:str=''):
+def connect_to_db(mod:str=""):
     ''' This function returns the connector and cursor objects to work with the database.
     
     It is important to grant privileges to the admin user in the MySQL database before importing the database.'''

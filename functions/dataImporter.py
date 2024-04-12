@@ -23,7 +23,7 @@ def import_df_to_db(conn, db, dataFrame, mod=''):
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
     for i in range(dataFrame.shape[0]):
-        sql_query = f"""INSERT INTO MovieDB{mod}.Main (Title, OriginalTitle, DeviceID, QualityID, Year,
+        sql_query = f"""INSERT INTO MovieDB{mod}.Main (Title, OriginalTitle, StorageID, QualityID, Year,
                     CountryID, Length, Screenplay, Score, Image) 
                     VALUES 
                     ('{dataFrame.loc[i, 'Titulo']}', '{dataFrame.loc[i, 'TituloOriginal']}', 
@@ -180,15 +180,14 @@ def import_languages(conn, db, film_id, category, value, mod=''):
             print(f"Error during the execution of {sql_query}", error)
 
 
-def obtainID(db, table, field, value):
+def obtainID(db, table, value):
     ''' Function to obtain the ID of a given string 'value' in a given 'table'.
 
     - db: MySQL cursor
     - table: Name of the table in which to look into for the 'value'
-    - field: Name of the column, within that 'table', in which to look into for the 'value'
     - value: String value to look for in the database and obtain its ID.'''
 
-    sql_query = f"SELECT id FROM MovieDB.{table} WHERE {field} = '{value}';"
+    sql_query = f"SELECT id FROM MovieDB.{table} WHERE Name = '{value}';"
     db.execute(sql_query)
 
     return db.fetchone()[0]
@@ -213,15 +212,12 @@ def import_data():
     for i in range(movie_database.shape[0]):
         movie_database.loc[i, 'Pais'] = obtainID(db, 
                                                 table='Countries', 
-                                                field='Country', 
                                                 value=movie_database.loc[i, 'Pais'])
         movie_database.loc[i, 'Disco'] = obtainID(db,
                                                 table='Storage', 
-                                                field='Device', 
                                                 value=movie_database.loc[i, 'Disco'])
         movie_database.loc[i, 'Calidad'] = obtainID(db,
                                                 table='Qualities', 
-                                                field='Quality', 
                                                 value=movie_database.loc[i, 'Calidad'])
 
     # Import dataFrame with updated 'Countries', 'Storage' and 'Qualities' values into SQL

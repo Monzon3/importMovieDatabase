@@ -54,7 +54,7 @@ def get_unique_values(col, dataFrame):
     return series.sort_values()
 
 
-def update_database(conn, db, series, table, col, mod:str=''):
+def update_database(conn, db, series, table, mod:str=""):
     ''' This function will populate the tables 'Countries', 'Languages', 'Qualities',
     'Storage' and 'Directors' in the new database with the unique values 
     obtained from the original database
@@ -63,7 +63,6 @@ def update_database(conn, db, series, table, col, mod:str=''):
     - db: MySQL cursor
     - series: Series of values to insert into the new database's tables
     - table: Name of the table in which to insert these values mentioned above 
-    - col: Name of the column, within the table, in which to insert values.
     - mod: Empty to operate with MovieDB and '_test' to operate with MovieDB_test.'''
 
     # Full languages' names need to be added so the NOT NULL constraint is met
@@ -78,10 +77,10 @@ def update_database(conn, db, series, table, col, mod:str=''):
         val = val.replace("'", "''")        # For directors with ' in their name
         try:
             if table == 'Languages':
-                sql_query = f"""INSERT INTO MovieDB{mod}.{table} ({col}, LangComplete)
+                sql_query = f"""INSERT INTO MovieDB{mod}.{table} (LangShort, LangComplete)
                             VALUES ('{val}', '{lang_list[val]}');"""
             else:
-                sql_query = f"INSERT INTO MovieDB{mod}.{table} ({col}) VALUES ('{val}');"
+                sql_query = f"INSERT INTO MovieDB{mod}.{table} (Name) VALUES ('{val}');"
             
             db.execute(sql_query)
             conn.commit()
@@ -90,7 +89,7 @@ def update_database(conn, db, series, table, col, mod:str=''):
             print(f"Error while updating the table {table} using:\n {sql_query}: ", error)
 
 
-def update_genres(conn, db, series, mod:str=''):
+def update_genres(conn, db, series, mod:str=""):
     ''' This function will populate the tables 'Genres' and 'Genres_Categories' 
     from the database using the .json file 'ListGenres', where all options should be included.
     
@@ -103,7 +102,7 @@ def update_genres(conn, db, series, mod:str=''):
     for i in series.keys():
         if series[i]['Category'] not in list: 
             list.append(series[i]['Category'])
-            sql_query = f"""INSERT INTO MovieDB{mod}.Genre_Categories (Category) VALUES 
+            sql_query = f"""INSERT INTO MovieDB{mod}.Genre_Categories (Name) VALUES 
                             ('{series[i]['Category']}');"""
             try:
                 db.execute(sql_query)
@@ -115,7 +114,7 @@ def update_genres(conn, db, series, mod:str=''):
         try:
             sql_query = f"""INSERT INTO MovieDB{mod}.Genres (CategoryID, Name) VALUES 
                             ((SELECT id FROM MovieDB{mod}.Genre_Categories 
-                            WHERE Category = '{series[i]['Category']}'), 
+                            WHERE Name = '{series[i]['Category']}'), 
                             '{series[i]['Name']}');""" 
 
             db.execute(sql_query)
@@ -148,20 +147,20 @@ def import_database():
     director = get_unique_values('Director', movie_database)
 
     # Import the lists into the auxiliary tables of both the new database and the test database
-    update_database(conn, db, disc, 'Storage', 'Device')
-    update_database(conn_test, db_test, disc, 'Storage', 'Device', '_test')
+    update_database(conn, db, disc, 'Storage')
+    update_database(conn_test, db_test, disc, 'Storage', '_test')
 
-    update_database(conn, db, quality, 'Qualities', 'Quality')
-    update_database(conn_test, db_test, quality, 'Qualities', 'Quality', '_test')
+    update_database(conn, db, quality, 'Qualities')
+    update_database(conn_test, db_test, quality, 'Qualities', '_test')
 
-    update_database(conn, db, lang, 'Languages', 'LangShort')
-    update_database(conn_test, db_test, lang, 'Languages', 'LangShort', '_test')
+    update_database(conn, db, lang, 'Languages')
+    update_database(conn_test, db_test, lang, 'Languages', '_test')
 
-    update_database(conn, db, country, 'Countries', 'Country')
-    update_database(conn_test, db_test, country, 'Countries', 'Country', '_test')
+    update_database(conn, db, country, 'Countries')
+    update_database(conn_test, db_test, country, 'Countries', '_test')
 
-    update_database(conn, db, director, 'Directors', 'Name')
-    update_database(conn_test, db_test, director, 'Directors', 'Name', '_test')
+    update_database(conn, db, director, 'Directors')
+    update_database(conn_test, db_test, director, 'Directors', '_test')
 
     list_genres = config.get('Aux_files', 'genres_list')
     with open(list_genres, encoding = 'utf-8') as f:
