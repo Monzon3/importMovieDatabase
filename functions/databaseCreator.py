@@ -225,6 +225,27 @@ def create_tables(mod:str=""):
     except sql.Error as error:
         print(f"Error while creating the table 'Genre_in_movie' in MovieDB{mod}", error)
 
+    # User_ranks
+    try:
+        sql_query = f"""CREATE TABLE MovieDB{mod}.User_ranks (
+                    id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                    Name VARCHAR(10) NOT NULL UNIQUE,
+                    PRIMARY KEY(id));"""
+
+        db.execute(sql_query)
+        conn.commit()
+        print(f"\t- 'User_ranks' table has been created correctly in MovieDB{mod}")
+    
+    except sql.Error as error:
+        print(f"Error while creating the table 'User_ranks' in MovieDB{mod}", error)
+
+    # Insert values into User_ranks
+    try:
+        sql_query = "INSERT INTO MovieDB{mod}.User_ranks (Name) Values ('admin'), ('powerUser'), ('user');" 
+
+    except sql.Error as error:
+        print(f"Error while adding default values into 'User_ranks' in MovieDB{mod}", error)
+
     # Users
     try:
         sql_query = f"""CREATE TABLE MovieDB{mod}.Users (
@@ -232,10 +253,10 @@ def create_tables(mod:str=""):
                     Name VARCHAR(20) NOT NULL UNIQUE,
                     Password VARCHAR(50) NOT NULL,
                     Email VARCHAR(40) NOT NULL UNIQUE,
-                    User_rank ENUM ('user', 'admin') DEFAULT ('user'),
+                    RankID TINYINT UNSIGNED NOT NULL DEFAULT (1),
                     Disabled BOOL DEFAULT (FALSE),
-                    Deleted BOOL DEFAULT (FALSE),
-                    PRIMARY KEY(id));"""
+                    PRIMARY KEY(id),
+                    FOREIGN KEY (RankID) REFERENCES User_ranks(id));"""
 
         db.execute(sql_query)
         conn.commit()
@@ -289,6 +310,8 @@ def delete_tables(mod:str=""):
     print(f"\t- 'Storage' table has been deleted correctly from MovieDB{mod}")
     db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.Users;")
     print(f"\t- 'Users' table has been deleted correctly from MovieDB{mod}")
+    db.execute(f"DROP TABLE IF EXISTS MovieDB{mod}.User_ranks;")
+    print(f"\t- 'User_ranks' table has been deleted correctly from MovieDB{mod}")
 
     db.close()
     conn.close()
