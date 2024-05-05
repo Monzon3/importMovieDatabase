@@ -242,6 +242,8 @@ def create_tables(mod:str=""):
     # Insert values into User_ranks
     try:
         sql_query = "INSERT INTO MovieDB{mod}.User_ranks (Name) Values ('admin'), ('powerUser'), ('user');" 
+        db.execute(sql_query)
+        conn.commit()
 
     except sql.Error as error:
         print(f"Error while adding default values into 'User_ranks' in MovieDB{mod}", error)
@@ -251,7 +253,7 @@ def create_tables(mod:str=""):
         sql_query = f"""CREATE TABLE MovieDB{mod}.Users (
                     id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     Name VARCHAR(20) NOT NULL UNIQUE,
-                    Password VARCHAR(50) NOT NULL,
+                    Password VARCHAR(60) NOT NULL,
                     Email VARCHAR(40) NOT NULL UNIQUE,
                     RankID TINYINT UNSIGNED NOT NULL DEFAULT (1),
                     Disabled BOOL DEFAULT (FALSE),
