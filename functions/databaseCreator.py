@@ -241,9 +241,10 @@ def create_tables(mod:str=""):
 
     # Insert values into User_ranks
     try:
-        sql_query = "INSERT INTO MovieDB{mod}.User_ranks (Name) Values ('admin'), ('powerUser'), ('user');" 
+        sql_query = f"INSERT INTO MovieDB{mod}.User_ranks (Name) VALUES ('admin'), ('powerUser'), ('user');"
         db.execute(sql_query)
         conn.commit()
+        print(f"\t- All User_ranks inserted into MovieDB{mod}")
 
     except sql.Error as error:
         print(f"Error while adding default values into 'User_ranks' in MovieDB{mod}", error)
