@@ -141,33 +141,37 @@
     },
     "36": {
         "Category": "Temática",
-        "Name": "Histórico" 
+        "Name": "Guerra de los Balcanes" 
     },
     "37": {
         "Category": "Temática",
-        "Name": "IRA" 
+        "Name": "Histórico" 
     },
     "38": {
         "Category": "Temática",
-        "Name": "Música" 
+        "Name": "IRA" 
     },
     "39": {
         "Category": "Temática",
-        "Name": "Película de culto" 
+        "Name": "Música" 
     },
     "40": {
         "Category": "Temática",
-        "Name": "Primera Guerra Mundial" 
+        "Name": "Película de culto" 
     },
     "41": {
         "Category": "Temática",
-        "Name": "Samuráis" 
+        "Name": "Primera Guerra Mundial" 
     },
     "42": {
         "Category": "Temática",
-        "Name": "Segunda Guerra Mundial" 
+        "Name": "Samuráis" 
     },
     "43": {
+        "Category": "Temática",
+        "Name": "Segunda Guerra Mundial" 
+    },
+    "44": {
         "Category": "Temática",
         "Name": "Yakuza" 
     }
